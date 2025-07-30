@@ -20,6 +20,7 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 ## 📂 Project Structure
 ```
 <!-- START STRUCTURE -->
+```
 .
 ├── README.md
 ├── STRUCTURE.txt
@@ -38,6 +39,7 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 └── tmp
 
 5 directories, 11 files
+```
 <!-- END STRUCTURE -->
 ```
 ---
