@@ -1,0 +1,16 @@
+./
+├── README.md
+├── data/
+│   ├── Aset.xlsx
+│   ├── Rasio.xlsx
+│   ├── summarized_aset.xlsx
+│   └── summarized_rasio.xlsx
+├── full_requirements.txt
+├── main_app.py
+├── pages/
+│   ├── number/
+│   └── percentage/
+├── requirements.txt
+└── structure.txt
+
+5 directories, 9 files
