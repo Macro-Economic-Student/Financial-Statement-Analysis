@@ -3,7 +3,7 @@ name: Update README with Folder Structure
 on:
   push:
     branches:
-      - main  # or 'master', change to match your repo's default branch
+      - main
     paths-ignore:
       - 'README.md'
   workflow_dispatch:
@@ -21,7 +21,11 @@ jobs:
 
     - name: Generate folder structure
       run: |
-        tree -I '.git|__pycache__' -L 2 > STRUCTURE.txt
+        {
+          echo '```'
+          tree -I '.git|__pycache__' -L 2
+          echo '```'
+        } > STRUCTURE.txt
 
     - name: Insert structure into README
       run: |
@@ -35,5 +39,5 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "actions@github.com"
         git add README.md
-        git commit -m "🔄 Auto-update folder structure in README"
+        git commit -m "🔄 Auto-update folder structure in README" || echo "No changes to commit"
         git push
