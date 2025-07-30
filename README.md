@@ -19,17 +19,9 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 
 ## 📂 Project Structure
 
-```
-streamlit_viz/
-├── pages/
-│   ├── percentage/
-│   │   ├── overtime_multiple_bank_check_page_percentage.py
-│   │   ├── overtime_single_bank_check_page_percentage.py
-│   │   └── single_feature_check_page_percentage.py
-├── main_app.py
-├── requirements.txt
-└── README.md
-```
+<!-- START STRUCTURE -->
+(The folder structure will be auto-inserted here.)
+<!-- END STRUCTURE -->
 
 ---
 
