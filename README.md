@@ -50,7 +50,7 @@ Make sure you have Python 3.10 installed.
 
 1. **Clone the repository**
    ```
-   git clone https://github.com/your-username/your-repo-name.git
+   git clone https://github.com/tancos02/Financial-Statement-Analysis.git
    cd your-repo-name
    ```
 
