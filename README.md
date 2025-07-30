@@ -34,11 +34,9 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 ├── pages
 │   ├── number
 │   └── percentage
-├── requirements.txt
-├── structure.txt
-└── tmp
+└── requirements.txt
 
-5 directories, 11 files
+5 directories, 9 files
 ```
 <!-- END STRUCTURE -->
 
