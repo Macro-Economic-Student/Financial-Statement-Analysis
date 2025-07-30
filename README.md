@@ -20,7 +20,24 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 ## 📂 Project Structure
 
 <!-- START STRUCTURE -->
-(The folder structure will be auto-inserted here.)
+.
+├── README.md
+├── STRUCTURE.txt
+├── data
+│   ├── Aset.xlsx
+│   ├── Rasio.xlsx
+│   ├── summarized_aset.xlsx
+│   └── summarized_rasio.xlsx
+├── full_requirements.txt
+├── main_app.py
+├── pages
+│   ├── number
+│   └── percentage
+├── requirements.txt
+├── structure.txt
+└── tmp
+
+5 directories, 11 files
 <!-- END STRUCTURE -->
 
 ---
