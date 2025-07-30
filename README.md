@@ -20,6 +20,7 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 ```
 .
 ├── README.md
+├── STRUCTURE.txt
 ├── data
 │   ├── Aset.xlsx
 │   ├── Rasio.xlsx
