@@ -1,6 +1,3 @@
-# Financial-Statement-Analysis
-📊 Interactive Streamlit dashboard for visualizing quarterly financial statement data collected from PDF reports. Includes time-series visualizations and multi-company comparisons. Future updates will add raw data parsing from PDF and number-based analysis.
-
 # 📈 Financial Statement Visualization Dashboard
 
 This repository contains a **Streamlit web app** for visualizing quarterly financial statement data from various banks and financial institutions. The project transforms tabular and percentage-based financial features into **interactive visualizations** to help track changes over time and compare across companies.
@@ -23,7 +20,6 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 ```
 .
 ├── README.md
-├── STRUCTURE.txt
 ├── data
 │   ├── Aset.xlsx
 │   ├── Rasio.xlsx
