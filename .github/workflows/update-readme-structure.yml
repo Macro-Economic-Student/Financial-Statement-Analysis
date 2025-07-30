@@ -1,0 +1,39 @@
+name: Update README with Folder Structure
+
+on:
+  push:
+    branches:
+      - main  # or 'master', change to match your repo's default branch
+    paths-ignore:
+      - 'README.md'
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install tree
+      run: sudo apt-get update && sudo apt-get install -y tree
+
+    - name: Generate folder structure
+      run: |
+        tree -I '.git|__pycache__' -L 2 > STRUCTURE.txt
+
+    - name: Insert structure into README
+      run: |
+        awk '/<!-- START STRUCTURE -->/ {print; system("cat STRUCTURE.txt"); skip=1; next}
+             /<!-- END STRUCTURE -->/ {skip=0}
+             !skip' README.md > NEW_README.md
+        mv NEW_README.md README.md
+
+    - name: Commit and push changes
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "actions@github.com"
+        git add README.md
+        git commit -m "🔄 Auto-update folder structure in README"
+        git push
