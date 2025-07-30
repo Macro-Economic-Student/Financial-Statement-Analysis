@@ -18,7 +18,7 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 ---
 
 ## 📂 Project Structure
-
+```
 <!-- START STRUCTURE -->
 .
 ├── README.md
@@ -39,7 +39,7 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 
 5 directories, 11 files
 <!-- END STRUCTURE -->
-
+```
 ---
 
 ## 📥 Future Additions
