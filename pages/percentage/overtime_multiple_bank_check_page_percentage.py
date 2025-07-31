@@ -97,7 +97,7 @@ def render_multi_company_chart(index: int):
             value=(min_date, max_date),
             min_value=min_date,
             max_value=max_date,
-            key=f"form_date_{index}"
+            key=date_key
         )
         submitted = st.form_submit_button("Apply Date Filter")
 
