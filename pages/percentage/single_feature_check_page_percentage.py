@@ -63,6 +63,21 @@ list_columns_to_check = [
     'net_interest_margin'
 ]
 
+# Check if 'posisi' is already in datetime format, if not, convert it
+if not pd.api.types.is_datetime64_any_dtype(df['posisi']):
+    df['posisi'] = pd.to_datetime(df['posisi'], errors='coerce')
+
+# Date filter
+min_date = df['posisi'].min()
+max_date = df['posisi'].max()
+
+start_date, end_date = st.date_input(
+    f"Select date range:",
+    value=(min_date, max_date),
+    min_value=min_date,
+    max_value=max_date
+)
+
 # --- Dropdown Selection ---
 selected = st.selectbox(
     "Select a feature to visualize:",
@@ -73,9 +88,15 @@ selected = st.selectbox(
 # --- Use Current Selection for Visuals ---
 column_to_check = selected
 
+# Filtered data based on company and date range
+df_filtered = df[
+    (df["posisi"] >= pd.to_datetime(start_date)) &
+    (df["posisi"] <= pd.to_datetime(end_date))
+]
+
 # --- Boxplot ---
 fig_box = px.box(
-    df,
+    df_filtered,
     x=column_to_check,
     color='company_name',
     template="plotly_white",
@@ -127,7 +148,7 @@ fig_go_hist = go.Figure()
 for company in sorted_companies:
     fig_go_hist.add_trace(
         go.Histogram(
-            x=df[df['company_name'] == company][column_to_check],
+            x=df_filtered[df_filtered['company_name'] == company][column_to_check],
             name=company,
             opacity=0.75
         )
@@ -158,12 +179,12 @@ fig_go_hist.update_layout(
     legend_traceorder="normal"  # 🔥 keeps legend in trace (loop) order
 )
 
-bins = np.histogram_bin_edges(df[column_to_check], bins='auto')
-counts = np.histogram(df[column_to_check], bins=bins)[0]
+bins = np.histogram_bin_edges(df_filtered[column_to_check], bins='auto')
+counts = np.histogram(df_filtered[column_to_check], bins=bins)[0]
 max_y = 5*max(counts)/4 
 
 # Compute statistics from the entire dataset
-x_data = df[column_to_check]
+x_data = df_filtered[column_to_check]
 mean_val = x_data.mean()
 median_val = x_data.median()
 q1 = x_data.quantile(0.25)
