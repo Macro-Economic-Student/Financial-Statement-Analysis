@@ -69,6 +69,26 @@ list_columns_to_check = [
 for i in range(1, 4):
     st.header(f"📈 Line Chart {i}")
 
+    date_key = f"date_range_selector_{i}"
+
+    # Check if 'posisi' is already in datetime format, if not, convert it
+    if not pd.api.types.is_datetime64_any_dtype(df['posisi']):
+        df['posisi'] = pd.to_datetime(df['posisi'], errors='coerce')
+
+    # Date filter
+    min_date = df['posisi'].min()
+    max_date = df['posisi'].max()
+
+    with st.form(key=f"date_form_{i}"):
+        start_date, end_date = st.date_input(
+            f"Select date range for Chart {i+1}",
+            value=(min_date, max_date),
+            min_value=min_date,
+            max_value=max_date,
+            key=date_key
+        )
+        submitted = st.form_submit_button("Apply Date Filter")
+
     col1, col2 = st.columns(2)
     with col1:
         company = st.selectbox(
@@ -86,7 +106,15 @@ for i in range(1, 4):
         )
 
     # Filter data
-    df_filtered = df[df['company_name'] == company].copy()
+    df_filtered = df.copy()
+
+    if submitted and start_date <= end_date:
+        df_filtered = df_filtered[
+            (df_filtered['posisi'].dt.date >= start_date) &
+            (df_filtered['posisi'].dt.date <= end_date)
+        ]
+        
+    df_filtered = df_filtered[df_filtered['company_name'] == company].copy()
     df_filtered['sort_key'] = df_filtered['year_quarter'].apply(quarter_sort_key)
     df_filtered = df_filtered.sort_values(by='sort_key')
 
