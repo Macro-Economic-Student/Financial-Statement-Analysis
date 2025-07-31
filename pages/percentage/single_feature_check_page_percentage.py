@@ -169,19 +169,26 @@ p15 = x_data.quantile(0.15)
 p85 = x_data.quantile(0.85)
 p95 = x_data.quantile(0.95)
 
-# Add vertical lines to the figure
-for stat_val, label, color in zip(
-    [mean_val, median_val, q1, q3],
-    ["Mean", "Median", "Q1", "Q3"],
-    ["red", "green", "blue", "purple"]
-):
-    fig_go_hist.add_vline(
-        x=stat_val,
-        line_width=2,
-        line_dash="dash",
-        line_color=color,
-        annotation_text=label,
-        annotation_position="top",
+# Compute key stats
+stats = {
+    "Q1 (25%)": (x_data.quantile(0.25), "royalblue"),
+    "Median (50%)": (x_data.median(), "firebrick"),
+    "Q3 (75%)": (x_data.quantile(0.75), "green"),
+    "Mean": (x_data.mean(), "black"),
+}
+
+# Add hoverable lines to the histogram
+for label, (x_val, color) in stats.items():
+    fig_go_hist.add_trace(
+        go.Scatter(
+            x=[x_val, x_val],
+            y=[0, df.shape[0]],
+            mode='lines',
+            line=dict(color=color, dash='dash', width=2),
+            name=label,
+            hovertemplate=f'{label}: {x_val:.2%}<extra></extra>',
+            showlegend=True
+        )
     )
 
 # Create summary table
@@ -198,6 +205,8 @@ summary_stats = {
     ]
 }
 summary_df = pd.DataFrame(summary_stats)
+# Convert to percentage format
+summary_df["Value"] = summary_df["Value"].apply(lambda x: f"{x:.2%}")
 
 # --- Display ---
 st.subheader(f"Boxplot of {column_to_check}")
