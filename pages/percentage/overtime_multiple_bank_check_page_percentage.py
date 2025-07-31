@@ -144,8 +144,7 @@ def render_multi_company_chart(index: int):
                 line=dict(color=color, dash="dash"),
                 name=label,
                 hovertemplate=f"{label}: {y_val:.2%}<extra></extra>",
-                showlegend=True,
-                yaxis='y2'  # secondary y to prevent range shift (but optional)
+                showlegend=True
             )
         )
 
