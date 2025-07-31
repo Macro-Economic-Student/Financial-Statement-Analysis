@@ -71,12 +71,14 @@ if not pd.api.types.is_datetime64_any_dtype(df['posisi']):
 min_date = df['posisi'].min()
 max_date = df['posisi'].max()
 
-start_date, end_date = st.date_input(
-    f"Select date range:",
-    value=(min_date, max_date),
-    min_value=min_date,
-    max_value=max_date
-)
+with st.form(key=f"date_form"):
+    start_date, end_date = st.date_input(
+        f"Select date range :",
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date
+    )
+    submitted = st.form_submit_button("Apply Date Filter")
 
 # --- Dropdown Selection ---
 selected = st.selectbox(
@@ -88,11 +90,13 @@ selected = st.selectbox(
 # --- Use Current Selection for Visuals ---
 column_to_check = selected
 
-# Filtered data based on company and date range
-df_filtered = df[
-    (df["posisi"] >= pd.to_datetime(start_date)) &
-    (df["posisi"] <= pd.to_datetime(end_date))
-]
+df_filtered = df.copy()
+
+if submitted and start_date <= end_date:
+    df_filtered = df_filtered[
+        (df_filtered['posisi'].dt.date >= start_date) &
+        (df_filtered['posisi'].dt.date <= end_date)
+    ]
 
 # --- Boxplot ---
 fig_box = px.box(
