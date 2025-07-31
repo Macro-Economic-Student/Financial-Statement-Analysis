@@ -124,10 +124,12 @@ def render_multi_company_chart(index: int):
         key=company_key
     )
 
+    df_filtered = df.copy()
+
     if submitted and start_date <= end_date:
-        df_filtered = df[
-            (df['posisi'].dt.date >= start_date) &
-            (df['posisi'].dt.date <= end_date)
+        df_filtered = df_filtered[
+            (df_filtered['posisi'].dt.date >= start_date) &
+            (df_filtered['posisi'].dt.date <= end_date)
         ]
 
     # Filtered data based on company and date range
