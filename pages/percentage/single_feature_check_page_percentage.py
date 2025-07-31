@@ -206,7 +206,7 @@ summary_stats = {
 }
 summary_df = pd.DataFrame(summary_stats)
 # Convert to percentage format
-summary_df["Value"] = summary_df["Value"].apply(lambda x: f"{x:.2%}")
+# summary_df["Value"] = summary_df["Value"].apply(lambda x: f"{x:.2%}")
 
 # --- Display ---
 st.subheader(f"Boxplot of {column_to_check}")
