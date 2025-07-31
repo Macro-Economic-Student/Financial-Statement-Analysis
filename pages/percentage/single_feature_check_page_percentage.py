@@ -62,20 +62,12 @@ list_columns_to_check = [
     'net_interest_margin'
 ]
 
-# --- Session State for Persistent Selection ---
-# if 'selected_column' not in st.session_state:
-#     st.session_state.selected_column = 'npl_gross'
-
 # --- Dropdown Selection ---
 selected = st.selectbox(
     "Select a feature to visualize:",
     options=list_columns_to_check,
     index=list_columns_to_check.index(list_columns_to_check[0]) if list_columns_to_check[0] in list_columns_to_check else 0
 )
-
-# --- Update Button ---
-# if st.button("Update"):
-# st.session_state.selected_column = selected
 
 # --- Use Current Selection for Visuals ---
 column_to_check = selected
@@ -165,6 +157,48 @@ fig_go_hist.update_layout(
     legend_traceorder="normal"  # 🔥 keeps legend in trace (loop) order
 )
 
+# Compute statistics from the entire dataset
+x_data = df[column_to_check]
+mean_val = x_data.mean()
+median_val = x_data.median()
+q1 = x_data.quantile(0.25)
+q3 = x_data.quantile(0.75)
+# Compute percentiles
+p5 = x_data.quantile(0.05)
+p15 = x_data.quantile(0.15)
+p85 = x_data.quantile(0.85)
+p95 = x_data.quantile(0.95)
+
+# Add vertical lines to the figure
+for stat_val, label, color in zip(
+    [mean_val, median_val, q1, q3],
+    ["Mean", "Median", "Q1", "Q3"],
+    ["red", "green", "blue", "purple"]
+):
+    fig_go_hist.add_vline(
+        x=stat_val,
+        line_width=2,
+        line_dash="dash",
+        line_color=color,
+        annotation_text=label,
+        annotation_position="top",
+    )
+
+# Create summary table
+summary_stats = {
+    'Statistic': [
+        'Min', 'P5', 'P15', 'Q1', 
+        'Mean', 'Median','Q3',
+        'P85', 'P95', 'Max', 'Std Dev'
+    ],
+    column_to_check: [
+        x_data.min(), p5, p15, q1,
+        mean_val, median_val,  q3,
+        p85, p95, x_data.max(), x_data.std()
+    ]
+}
+summary_df = pd.DataFrame(summary_stats)
+
 # --- Display ---
 st.subheader(f"Boxplot of {column_to_check}")
 st.plotly_chart(fig_box, use_container_width=True)
@@ -174,3 +208,7 @@ st.plotly_chart(fig_box, use_container_width=True)
 
 st.subheader(f"Histogram of {column_to_check}")
 st.plotly_chart(fig_go_hist, use_container_width=True)
+
+# Show table in Streamlit
+st.markdown("### Statistical Summary")
+st.dataframe(summary_df.style.format({column_to_check: "{:.4f}"}))
