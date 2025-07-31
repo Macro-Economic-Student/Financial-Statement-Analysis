@@ -4,8 +4,6 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-# st.set_page_config(layout="wide")  # 👈 Add this
-
 st.markdown("# Overtime Multiple Bank Persentase")
 
 with st.sidebar:
@@ -81,8 +79,25 @@ def render_multi_company_chart(index: int):
 
     col_key = f"feature_selector_{index}"
     company_key = f"company_selector_{index}"
+    date_key = f"date_range_selector_{index}"
     chart_key = f"plotly_chart_{index}"
     df_key = f"plotly_df_{index}"
+
+    # Check if 'posisi' is already in datetime format, if not, convert it
+    if not pd.api.types.is_datetime64_any_dtype(df['posisi']):
+        df['posisi'] = pd.to_datetime(df['posisi'], errors='coerce')
+
+    # Date filter
+    min_date = df['posisi'].min()
+    max_date = df['posisi'].max()
+
+    start_date, end_date = st.date_input(
+        f"Select date range for Chart {index+1}",
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date,
+        key=date_key
+    )
 
     # Selectors
     column_to_check = st.selectbox(
@@ -99,8 +114,12 @@ def render_multi_company_chart(index: int):
         key=company_key
     )
 
-    # Filtered data
-    df_filtered = df[df["company_name"].isin(selected_companies)]
+    # Filtered data based on company and date range
+    df_filtered = df[
+        (df["company_name"].isin(selected_companies)) &
+        (df["posisi"] >= pd.to_datetime(start_date)) &
+        (df["posisi"] <= pd.to_datetime(end_date))
+    ]
 
     # Plot
     fig = px.line(
