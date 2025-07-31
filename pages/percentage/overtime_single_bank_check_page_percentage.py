@@ -113,7 +113,7 @@ for i in range(1, 4):
             (df_filtered['posisi'].dt.date >= start_date) &
             (df_filtered['posisi'].dt.date <= end_date)
         ]
-        
+
     df_filtered = df_filtered[df_filtered['company_name'] == company].copy()
     df_filtered['sort_key'] = df_filtered['year_quarter'].apply(quarter_sort_key)
     df_filtered = df_filtered.sort_values(by='sort_key')
@@ -141,6 +141,25 @@ for i in range(1, 4):
 # --- Section Header ---
 st.header("📊 Multi-Line Chart for One Company")
 
+# Date selection
+# Check if 'posisi' is already in datetime format, if not, convert it
+if not pd.api.types.is_datetime64_any_dtype(df['posisi']):
+    df['posisi'] = pd.to_datetime(df['posisi'], errors='coerce')
+
+# Date filter
+min_date = df['posisi'].min()
+max_date = df['posisi'].max()
+
+with st.form(key=f"date_form_multi_feature"):
+    start_date, end_date = st.date_input(
+        f"Select date range :",
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date,
+        key="date_range_selector_multi_feature"
+    )
+    submitted = st.form_submit_button("Apply Date Filter")
+
 # --- Selection ---
 col1, col2 = st.columns(2)
 
@@ -161,7 +180,13 @@ with col2:
     )
 
 # --- Filter & Sort ---
-df_multi = df[df['company_name'] == company_multi].copy()
+df_multi = df.copy()
+if submitted and start_date <= end_date:
+    df_multi = df_multi[
+        (df_multi['posisi'].dt.date >= start_date) &
+        (df_multi['posisi'].dt.date <= end_date)
+    ]
+df_multi = df_multi[df_multi['company_name'] == company_multi].copy()
 df_multi['sort_key'] = df_multi['year_quarter'].apply(quarter_sort_key)
 df_multi = df_multi.sort_values(by='sort_key')
 
