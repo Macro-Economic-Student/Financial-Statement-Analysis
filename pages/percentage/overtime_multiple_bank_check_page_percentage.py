@@ -4,6 +4,8 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
+st.set_page_config(layout="wide")  # 👈 Add this
+
 st.markdown("# Overtime Multiple Bank Persentase")
 
 with st.sidebar:
@@ -172,9 +174,6 @@ def render_multi_company_chart(index: int):
         ]]
         summary_df = summary_df.applymap(lambda x: f"{x:.2%}")
         st.dataframe(summary_df, use_container_width=True, key=df_key)
-
-    # st.plotly_chart(fig, use_container_width=True, key=chart_key)
-
 
 # --- Render all three charts ---
 st.markdown("## 📈 Multi-Line Comparisons: Company vs Feature Over Time")
