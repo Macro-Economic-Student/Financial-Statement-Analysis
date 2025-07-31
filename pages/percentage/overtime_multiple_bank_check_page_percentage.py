@@ -131,12 +131,11 @@ def render_multi_company_chart(index: int):
         ]
 
     # Filtered data based on company and date range
-    df_filtered = df_filtered[
-        (df_filtered["company_name"].isin(selected_companies)) 
+    df_filtered = df_filtered[df_filtered["company_name"].isin(selected_companies)]
         # &
         # (df["posisi"] >= pd.to_datetime(start_date)) &
         # (df["posisi"] <= pd.to_datetime(end_date))
-    ]
+    
 
     # Plot
     fig = px.line(
