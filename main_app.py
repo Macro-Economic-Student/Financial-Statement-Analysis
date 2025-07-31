@@ -1,5 +1,7 @@
 import streamlit as st
 
+st.set_page_config(layout="wide")  # 👈 Add this
+
 # Pages for percentage
 single_feat_check_percentage = st.Page(
     "pages/percentage/single_feature_check_page_percentage.py", title="Single Feature Persentase", default=True

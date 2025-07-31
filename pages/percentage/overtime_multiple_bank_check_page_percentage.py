@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-st.set_page_config(layout="wide")  # 👈 Add this
+# st.set_page_config(layout="wide")  # 👈 Add this
 
 st.markdown("# Overtime Multiple Bank Persentase")
 
