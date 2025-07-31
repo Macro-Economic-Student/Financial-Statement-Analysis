@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from collections import Counter
 
 st.markdown("# Single Feature Persentase")
 
@@ -157,6 +158,10 @@ fig_go_hist.update_layout(
     legend_traceorder="normal"  # 🔥 keeps legend in trace (loop) order
 )
 
+bins = np.histogram_bin_edges(df[column_to_check], bins='auto')
+counts = np.histogram(df[column_to_check], bins=bins)[0]
+max_y = 5*max(counts)/4 
+
 # Compute statistics from the entire dataset
 x_data = df[column_to_check]
 mean_val = x_data.mean()
@@ -174,22 +179,36 @@ stats = {
     "Q1 (25%)": (x_data.quantile(0.25), "royalblue"),
     "Median (50%)": (x_data.median(), "firebrick"),
     "Q3 (75%)": (x_data.quantile(0.75), "green"),
-    "Mean": (x_data.mean(), "black"),
+    "Mean": (x_data.mean(), "white"),
 }
 
-# Add hoverable lines to the histogram
+# Add vertical lines using a secondary y-axis to avoid changing the original y-axis
 for label, (x_val, color) in stats.items():
     fig_go_hist.add_trace(
         go.Scatter(
             x=[x_val, x_val],
-            y=[0, df.shape[0]],
+            y=[0, max_y],
             mode='lines',
-            line=dict(color=color, dash='dash', width=2),
             name=label,
+            line=dict(color=color, dash='dash', width=2),
             hovertemplate=f'{label}: {x_val:.2%}<extra></extra>',
+            yaxis='y2',
             showlegend=True
         )
     )
+
+# Update layout to fix primary Y and add secondary Y (hidden)
+fig_go_hist.update_layout(
+    yaxis=dict(title='Count of Observations', range=[0, max_y * 1.1]),
+    yaxis2=dict(overlaying='y', side='right', showticklabels=False),
+    xaxis_tickformat=".02%",
+    barmode='stack',
+    template='plotly_white',
+    title=f'Stacked Histogram of {column_to_check} by Company Name',
+    xaxis_title=f'{column_to_check}',
+    legend_title='Company',
+    legend_traceorder="normal"
+)
 
 # Create summary table
 summary_stats = {
@@ -206,7 +225,7 @@ summary_stats = {
 }
 summary_df = pd.DataFrame(summary_stats)
 # Convert to percentage format
-# summary_df["Value"] = summary_df["Value"].apply(lambda x: f"{x:.2%}")
+summary_df[column_to_check] = summary_df[column_to_check].apply(lambda x: f"{x:.2%}")
 
 # --- Display ---
 st.subheader(f"Boxplot of {column_to_check}")
