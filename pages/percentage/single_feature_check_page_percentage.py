@@ -239,4 +239,4 @@ st.plotly_chart(fig_go_hist, use_container_width=True)
 
 # Show table in Streamlit
 st.markdown("### Statistical Summary")
-st.dataframe(summary_df.style.format({column_to_check: "{:.4f}"}))
+st.dataframe(summary_df, use_container_width=True)
