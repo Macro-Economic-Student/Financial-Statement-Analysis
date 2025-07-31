@@ -114,7 +114,12 @@ for i in range(1, 4):
             (df_filtered['posisi'].dt.date <= end_date)
         ]
 
-    df_filtered = df_filtered[df_filtered['company_name'] == company].copy()
+    # Filtered data based on company and date range
+    df_filtered = df_filtered[
+        (df_filtered["company_name"] == company) &
+        (df_filtered["posisi"] >= pd.to_datetime(start_date)) &
+        (df_filtered["posisi"] <= pd.to_datetime(end_date))
+    ]
     df_filtered['sort_key'] = df_filtered['year_quarter'].apply(quarter_sort_key)
     df_filtered = df_filtered.sort_values(by='sort_key')
 
@@ -151,7 +156,7 @@ min_date = df['posisi'].min()
 max_date = df['posisi'].max()
 
 with st.form(key=f"date_form_multi_feature"):
-    start_date, end_date = st.date_input(
+    start_date_multi, end_date_multi = st.date_input(
         f"Select date range :",
         value=(min_date, max_date),
         min_value=min_date,
@@ -181,12 +186,17 @@ with col2:
 
 # --- Filter & Sort ---
 df_multi = df.copy()
-if submitted and start_date <= end_date:
+if submitted and start_date_multi <= end_date_multi:
     df_multi = df_multi[
-        (df_multi['posisi'].dt.date >= start_date) &
-        (df_multi['posisi'].dt.date <= end_date)
+        (df_multi['posisi'].dt.date >= start_date_multi) &
+        (df_multi['posisi'].dt.date <= end_date_multi)
     ]
-df_multi = df_multi[df_multi['company_name'] == company_multi].copy()
+# Filtered data based on company and date range
+df_multi = df_multi[
+    (df_multi["company_name"]== company_multi) &
+    (df_multi["posisi"] >= pd.to_datetime(start_date_multi)) &
+    (df_multi["posisi"] <= pd.to_datetime(end_date_multi))
+]
 df_multi['sort_key'] = df_multi['year_quarter'].apply(quarter_sort_key)
 df_multi = df_multi.sort_values(by='sort_key')
 
