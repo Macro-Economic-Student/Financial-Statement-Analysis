@@ -91,13 +91,23 @@ def render_multi_company_chart(index: int):
     min_date = df['posisi'].min()
     max_date = df['posisi'].max()
 
-    start_date, end_date = st.date_input(
-        f"Select date range for Chart {index+1}",
-        value=(min_date, max_date),
-        min_value=min_date,
-        max_value=max_date,
-        key=date_key
-    )
+    # start_date, end_date = st.date_input(
+    #     f"Select date range for Chart {index+1}",
+    #     value=(min_date, max_date),
+    #     min_value=min_date,
+    #     max_value=max_date,
+    #     key=date_key
+    # )
+
+    with st.form(key=f"date_form_{index}"):
+        start_date, end_date = st.date_input(
+            f"Select date range for Chart {index+1}",
+            value=(min_date, max_date),
+            min_value=min_date,
+            max_value=max_date,
+            key=f"form_date_{index}"
+        )
+        submitted = st.form_submit_button("Apply Date Filter")
 
     # Selectors
     column_to_check = st.selectbox(
@@ -114,11 +124,18 @@ def render_multi_company_chart(index: int):
         key=company_key
     )
 
+    if submitted and start_date <= end_date:
+        df_filtered = df[
+            (df['posisi'].dt.date >= start_date) &
+            (df['posisi'].dt.date <= end_date)
+        ]
+
     # Filtered data based on company and date range
-    df_filtered = df[
-        (df["company_name"].isin(selected_companies)) &
-        (df["posisi"] >= pd.to_datetime(start_date)) &
-        (df["posisi"] <= pd.to_datetime(end_date))
+    df_filtered = df_filtered[
+        (df_filtered["company_name"].isin(selected_companies)) 
+        # &
+        # (df["posisi"] >= pd.to_datetime(start_date)) &
+        # (df["posisi"] <= pd.to_datetime(end_date))
     ]
 
     # Plot
