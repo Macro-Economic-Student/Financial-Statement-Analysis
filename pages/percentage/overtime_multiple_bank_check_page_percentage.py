@@ -80,6 +80,7 @@ def render_multi_company_chart(index: int):
     col_key = f"feature_selector_{index}"
     company_key = f"company_selector_{index}"
     chart_key = f"plotly_chart_{index}"
+    df_key = f"plotly_df_{index}"
 
     # Selectors
     column_to_check = st.selectbox(
@@ -109,14 +110,71 @@ def render_multi_company_chart(index: int):
         title=f"{column_to_check} Over Time (Chart {index+1})"
     )
 
+    # Compute summary stats from filtered data
+    values = df_filtered[column_to_check].dropna()
+
+    stats = {
+        "Min": values.min(),
+        "P5": np.percentile(values, 5),
+        "P15": np.percentile(values, 15),
+        "Q1 (25%)": values.quantile(0.25),
+        "Mean": values.mean(),
+        "Median": values.median(),
+        "Q3 (75%)": values.quantile(0.75),
+        "P85": np.percentile(values, 85),
+        "P95": np.percentile(values, 95),
+        "Max": values.max(),
+        "Std": values.std()
+    }
+
+    # Add horizontal lines for key stats
+    highlight_stats = {
+        "Mean": ("white", stats["Mean"]),
+        "Median": ("firebrick", stats["Median"]),
+        "Q1 (25%)": ("royalblue", stats["Q1 (25%)"]),
+        "Q3 (75%)": ("green", stats["Q3 (75%)"]),
+    }
+
+    for label, (color, y_val) in highlight_stats.items():
+        fig.add_trace(
+            go.Scatter(
+                x=[df_filtered['year_quarter'].min(), df_filtered['year_quarter'].max()],
+                y=[y_val, y_val],
+                mode="lines",
+                line=dict(color=color, dash="dash"),
+                name=label,
+                hovertemplate=f"{label}: {y_val:.2%}<extra></extra>",
+                showlegend=True,
+                yaxis='y2'  # secondary y to prevent range shift (but optional)
+            )
+        )
+
+    # Lock x-axis order
     fig.update_layout(
         xaxis_title="Year Quarter",
         yaxis_title=column_to_check,
-        xaxis=dict(categoryorder='array', categoryarray=df_filtered['year_quarter'].unique())
+        xaxis=dict(categoryorder='array', categoryarray=df_filtered['year_quarter'].unique()),
+        yaxis=dict(tickformat=".2%"),
+        legend_traceorder="normal",
+        template="plotly_white"
     )
-    fig.update_yaxes(tickformat=".02%")
 
-    st.plotly_chart(fig, use_container_width=True, key=chart_key)
+    # Layout the chart and the stats side by side
+    col1, col2 = st.columns([3, 1])
+
+    with col1:
+        st.plotly_chart(fig, use_container_width=True, key=chart_key)
+
+    with col2:
+        summary_df = pd.DataFrame.from_dict(stats, orient='index', columns=['Value'])
+        summary_df = summary_df.loc[[
+            "Min", "P5", "P15", "Q1 (25%)", "Mean", "Median",
+            "Q3 (75%)", "P85", "P95", "Max", "Std"
+        ]]
+        summary_df = summary_df.applymap(lambda x: f"{x:.2%}")
+        st.dataframe(summary_df, use_container_width=True, key=df_key)
+
+    # st.plotly_chart(fig, use_container_width=True, key=chart_key)
 
 
 # --- Render all three charts ---
