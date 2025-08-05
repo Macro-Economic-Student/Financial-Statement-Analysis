@@ -26,6 +26,17 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 │   ├── Rasio.xlsx
 │   ├── summarized_aset.xlsx
 │   └── summarized_rasio.xlsx
+├── data_extractor
+│   ├── Allobank
+│   ├── Aset.xlsx
+│   ├── BCA Digital
+│   ├── Bank Jago
+│   ├── Rasio.xlsx
+│   ├── Seabank
+│   ├── financial_statement_eda.ipynb
+│   ├── financial_statement_extractor.ipynb
+│   ├── summarized_aset.xlsx
+│   └── summarized_rasio.xlsx
 ├── full_requirements.txt
 ├── main_app.py
 ├── pages
@@ -33,7 +44,7 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 │   └── percentage
 └── requirements.txt
 
-5 directories, 9 files
+10 directories, 15 files
 ```
 <!-- END STRUCTURE -->
 
