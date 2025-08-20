@@ -134,19 +134,22 @@ def render_multi_company_chart(index: int):
         key=company_key
     )
 
-    selected_year = st.multiselect(
-        f"Select year for Chart {index+1}",
-        options=sorted_year,
-        default=default_year,
-        key=year_key
-    )
+    col1, col2 = st.columns(2)
 
-    selected_quartile = st.multiselect(
-        f"Select quartile for Chart {index+1}",
-        options=sorted_quartile,
-        default=default_quartile,
-        key=quartile_key
-    )
+    with col1 :
+        selected_year = st.multiselect(
+            f"Select year for Chart {index+1}",
+            options=sorted_year,
+            default=default_year,
+            key=year_key
+        )
+    with col2 :
+        selected_quartile = st.multiselect(
+            f"Select quartile for Chart {index+1}",
+            options=sorted_quartile,
+            default=default_quartile,
+            key=quartile_key
+        )
 
     df_filtered = df.copy()
 
