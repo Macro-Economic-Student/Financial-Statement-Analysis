@@ -135,7 +135,7 @@ def render_multi_company_chart(index: int):
         )
     
     with col2 :
-        selected_kbmi = st.selectbox(
+        selected_kbmi = st.multiselect(
             f"Select KBMI for Chart {index+1}",
             options=sorted_kbmi,
             default=default_kbmi,
