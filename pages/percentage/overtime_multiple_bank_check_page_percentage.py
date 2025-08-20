@@ -58,11 +58,14 @@ df = df_rasio.copy()
 # Sort company names in ascending order
 sorted_companies = sorted(df['company_name'].unique())
 
-# Sort company names in ascending order
+# Sort year in ascending order
 sorted_year = sorted(df['year'].unique())
 
-# Sort company names in ascending order
+# Sort quartile in ascending order
 sorted_quartile = sorted(df['quarter'].unique())
+
+# Sort kbmi type in ascending order
+sorted_kbmi = sorted(df['kbmi_type'].unique())
 
 # Set the category order explicitly
 df['company_name'] = pd.Categorical(df['company_name'], categories=sorted_companies, ordered=True)
@@ -88,6 +91,7 @@ default_feature = "ROA" if "ROA" in list_columns_to_check else list_columns_to_c
 default_companies = list_companies_to_check[:2]
 default_year = sorted_year
 default_quartile = sorted_quartile
+default_kbmi = sorted_kbmi
 
 # Helper function to render one chart block
 def render_multi_company_chart(index: int):
@@ -98,6 +102,7 @@ def render_multi_company_chart(index: int):
     date_key = f"date_range_selector_{index}"
     year_key = f"year_selector_{index}"
     quartile_key = f"quartile_selector_{index}"
+    kbmi_key = f"kbmi_selector_{index}"
     chart_key = f"plotly_chart_{index}"
     df_key = f"plotly_df_{index}"
 
@@ -120,12 +125,22 @@ def render_multi_company_chart(index: int):
         submitted = st.form_submit_button("Apply Date Filter")
 
     # Selectors
-    column_to_check = st.selectbox(
-        f"Select feature for Chart {index+1}",
-        options=list_columns_to_check,
-        index=list(list_columns_to_check).index(default_feature),
-        key=col_key
-    )
+    col1, col2 = st.columns(2)
+    with col1 :
+        column_to_check = st.selectbox(
+            f"Select feature for Chart {index+1}",
+            options=list_columns_to_check,
+            index=list(list_columns_to_check).index(default_feature),
+            key=col_key
+        )
+    
+    with col2 :
+        selected_kbmi = st.selectbox(
+            f"Select KBMI for Chart {index+1}",
+            options=sorted_kbmi,
+            default=default_kbmi,
+            key=kbmi_key
+        )
 
     selected_companies = st.multiselect(
         f"Select companies for Chart {index+1}",
@@ -134,16 +149,16 @@ def render_multi_company_chart(index: int):
         key=company_key
     )
 
-    col1, col2 = st.columns(2)
+    col3, col4 = st.columns(2)
 
-    with col1 :
+    with col3 :
         selected_year = st.multiselect(
             f"Select year for Chart {index+1}",
             options=sorted_year,
             default=default_year,
             key=year_key
         )
-    with col2 :
+    with col4 :
         selected_quartile = st.multiselect(
             f"Select quartile for Chart {index+1}",
             options=sorted_quartile,
@@ -162,6 +177,7 @@ def render_multi_company_chart(index: int):
     # Filtered data based on company and date range
     df_filtered = df_filtered[
         (df_filtered["company_name"].isin(selected_companies)) &
+        (df_filtered["kbmi_type"].isin(selected_kbmi)) &
         (df_filtered["year"].isin(selected_year)) &
         (df_filtered["quarter"].isin(selected_quartile)) &
         (df_filtered["posisi"] >= pd.to_datetime(start_date)) &
