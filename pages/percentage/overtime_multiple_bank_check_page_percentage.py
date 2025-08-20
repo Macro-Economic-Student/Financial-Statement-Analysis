@@ -58,6 +58,12 @@ df = df_rasio.copy()
 # Sort company names in ascending order
 sorted_companies = sorted(df['company_name'].unique())
 
+# Sort company names in ascending order
+sorted_year = sorted(df['year'].unique())
+
+# Sort company names in ascending order
+sorted_quartile = sorted(df['quarter'].unique())
+
 # Set the category order explicitly
 df['company_name'] = pd.Categorical(df['company_name'], categories=sorted_companies, ordered=True)
 
@@ -80,6 +86,8 @@ df = df.sort_values(by='sort_key')
 # Default values
 default_feature = "ROA" if "ROA" in list_columns_to_check else list_columns_to_check[0]
 default_companies = list_companies_to_check[:2]
+default_year = sorted_year
+default_quartile = sorted_quartile
 
 # Helper function to render one chart block
 def render_multi_company_chart(index: int):
@@ -88,6 +96,8 @@ def render_multi_company_chart(index: int):
     col_key = f"feature_selector_{index}"
     company_key = f"company_selector_{index}"
     date_key = f"date_range_selector_{index}"
+    year_key = f"year_selector_{index}"
+    quartile_key = f"quartile_selector_{index}"
     chart_key = f"plotly_chart_{index}"
     df_key = f"plotly_df_{index}"
 
@@ -124,6 +134,20 @@ def render_multi_company_chart(index: int):
         key=company_key
     )
 
+    selected_year = st.multiselect(
+        f"Select year for Chart {index+1}",
+        options=sorted_year,
+        default=default_year,
+        key=year_key
+    )
+
+    selected_quartile = st.multiselect(
+        f"Select quartile for Chart {index+1}",
+        options=sorted_quartile,
+        default=default_quartile,
+        key=quartile_key
+    )
+
     df_filtered = df.copy()
 
     if submitted and start_date <= end_date:
@@ -135,10 +159,11 @@ def render_multi_company_chart(index: int):
     # Filtered data based on company and date range
     df_filtered = df_filtered[
         (df_filtered["company_name"].isin(selected_companies)) &
+        (df_filtered["year"].isin(selected_year)) &
+        (df_filtered["quartile"].isin(selected_quartile)) &
         (df_filtered["posisi"] >= pd.to_datetime(start_date)) &
         (df_filtered["posisi"] <= pd.to_datetime(end_date))
     ]
-    
 
     # Plot
     fig = px.line(
