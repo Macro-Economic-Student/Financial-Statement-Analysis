@@ -160,7 +160,7 @@ def render_multi_company_chart(index: int):
     df_filtered = df_filtered[
         (df_filtered["company_name"].isin(selected_companies)) &
         (df_filtered["year"].isin(selected_year)) &
-        (df_filtered["quartile"].isin(selected_quartile)) &
+        (df_filtered["quarter"].isin(selected_quartile)) &
         (df_filtered["posisi"] >= pd.to_datetime(start_date)) &
         (df_filtered["posisi"] <= pd.to_datetime(end_date))
     ]
