@@ -4,6 +4,13 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from collections import Counter
+import sys
+from pathlib import Path
+
+# add "../data" to sys.path
+sys.path.append(str(Path(__file__).resolve().parents[2] / "data"))
+
+from import_data import import_rasio
 
 st.markdown("# Single Feature Persentase")
 
@@ -40,8 +47,9 @@ px.defaults.color_continuous_scale = "Viridis"
 px.defaults.template = "plotly_white"  # or "ggplot2", "seaborn", etc.
 
 # File path for data
-rasio_file_path = "data/summarized_rasio.xlsx"
-df_rasio = pd.read_excel(rasio_file_path)
+# rasio_file_path = "data/summarized_rasio.xlsx"
+# df_rasio = pd.read_excel(rasio_file_path)
+df_rasio = import_rasio()
 # Placeholder for combined df
 df = df_rasio.copy()
 
