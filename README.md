@@ -23,7 +23,12 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 ├── STRUCTURE.txt
 ├── data
 │   ├── Aset.xlsx
+│   ├── Rasio-KBMI-1.xlsx
+│   ├── Rasio-KBMI-4.xlsx
 │   ├── Rasio.xlsx
+│   ├── import_data.py
+│   ├── summarized rasio - KBMI 1.xlsx
+│   ├── summarized rasio - KBMI 4.xlsx
 │   ├── summarized_aset.xlsx
 │   └── summarized_rasio.xlsx
 ├── data_extractor
@@ -44,7 +49,7 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 │   └── percentage
 └── requirements.txt
 
-10 directories, 15 files
+10 directories, 20 files
 ```
 <!-- END STRUCTURE -->
 
