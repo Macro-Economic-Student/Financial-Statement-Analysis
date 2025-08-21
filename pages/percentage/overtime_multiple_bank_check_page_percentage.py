@@ -114,6 +114,9 @@ def render_multi_company_chart(index: int):
     min_date = df['posisi'].min()
     max_date = df['posisi'].max()
 
+    # df_filtered for dataframe that will be changed
+    df_filtered = df.copy()
+
     with st.form(key=f"date_form_{index}"):
         start_date, end_date = st.date_input(
             f"Select date range for Chart {index+1}",
@@ -151,22 +154,31 @@ def render_multi_company_chart(index: int):
         # if no KBMI selected, allow all companies (or set to [] if you prefer)
         valid_companies = sorted(df["company_name"].dropna().unique().tolist())
 
-    default_companies = [c for c in sorted_companies if c in valid_companies]
-
     selected_companies = st.multiselect(
         f"Select companies for Chart {index+1}",
-        options=list_companies_to_check,
-        default=default_companies,
+        options=valid_companies,
+        default=valid_companies,
         key=company_key
     )
+
+    # Add mask for filtered dataframe
+    mask_posisi = ((df_filtered['posisi'].dt.date >= start_date) &
+            (df_filtered['posisi'].dt.date <= end_date)) if (submitted and start_date <= end_date) else True
+    mask_kbmi_type = df_filtered["kbmi_type"].isin(selected_kbmi) if selected_kbmi else True
+    mask_company_name = df_filtered["company_name"].isin(selected_companies) if selected_companies else True
+
+
+    # normalize year to numeric for sorting
+    years_series = pd.to_numeric(df.loc[mask_kbmi_type & mask_company_name, "year"], errors="coerce")
+    valid_years = sorted(years_series.dropna().astype(int).unique().tolist())
 
     col3, col4 = st.columns(2)
 
     with col3 :
         selected_year = st.multiselect(
             f"Select year for Chart {index+1}",
-            options=sorted_year,
-            default=default_year,
+            options=valid_years,
+            default=valid_years,
             key=year_key
         )
     with col4 :
@@ -177,18 +189,6 @@ def render_multi_company_chart(index: int):
             key=quartile_key
         )
 
-    df_filtered = df.copy()
-
-    # if submitted and start_date <= end_date:
-    #     df_filtered = df_filtered[
-    #         (df_filtered['posisi'].dt.date >= start_date) &
-    #         (df_filtered['posisi'].dt.date <= end_date)
-    #     ]
-
-    mask_posisi = ((df_filtered['posisi'].dt.date >= start_date) &
-            (df_filtered['posisi'].dt.date <= end_date)) if (submitted and start_date <= end_date) else True
-    mask_kbmi_type = df_filtered["kbmi_type"].isin(selected_kbmi) if selected_kbmi else True
-    mask_company_name = df_filtered["company_name"].isin(selected_companies) if selected_companies else True
     mask_year = df_filtered["year"].isin(selected_year) if selected_year else True
     mask_quarter = df_filtered["quarter"].isin(selected_quartile) if selected_quartile else True
 
@@ -196,14 +196,6 @@ def render_multi_company_chart(index: int):
     df_filtered = df_filtered[
         mask_posisi & mask_kbmi_type & mask_company_name & mask_year & mask_quarter
     ]
-    # df_filtered = df_filtered[
-    #     (df_filtered["company_name"].isin(selected_companies)) &
-    #     (df_filtered["kbmi_type"].isin(selected_kbmi)) &
-    #     (df_filtered["year"].isin(selected_year)) &
-    #     (df_filtered["quarter"].isin(selected_quartile)) &
-    #     (df_filtered["posisi"] >= pd.to_datetime(start_date)) &
-    #     (df_filtered["posisi"] <= pd.to_datetime(end_date))
-    # ]
 
     # Plot
     fig = px.line(
