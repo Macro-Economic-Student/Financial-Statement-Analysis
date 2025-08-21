@@ -110,6 +110,14 @@ def render_multi_company_chart(index: int):
     if not pd.api.types.is_datetime64_any_dtype(df['posisi']):
         df['posisi'] = pd.to_datetime(df['posisi'], errors='coerce')
 
+    # Initialize session keys once
+    if "selected_kbmi" not in st.session_state:
+        st.session_state.selected_kbmi = []
+    if "valid_companies" not in st.session_state:
+        st.session_state.valid_companies = sorted_companies
+    if "selected_companies" not in st.session_state:
+        st.session_state.selected_companies = []
+
     # Date filter
     min_date = df['posisi'].min()
     max_date = df['posisi'].max()
@@ -123,6 +131,23 @@ def render_multi_company_chart(index: int):
             key=date_key
         )
         submitted = st.form_submit_button("Apply Date Filter")
+
+
+    def _update_company_options():
+        sel = st.session_state.kbmi_selected
+        if sel:
+            vc = (
+                df.loc[df["kbmi_type"].isin(sel), "company_name"]
+                  .dropna().drop_duplicates().sort_values().tolist()
+            )
+        else:
+            vc = sorted_companies
+
+        st.session_state.valid_companies = vc
+        # drop any previously selected companies that are no longer valid
+        st.session_state.selected_companies = [
+            c for c in st.session_state.selected_companies if c in vc
+        ]
 
     # Selectors
     col1, col2 = st.columns(2)
@@ -139,27 +164,16 @@ def render_multi_company_chart(index: int):
             f"Select KBMI for Chart {index+1}",
             options=sorted_kbmi,
             default=default_kbmi,
-            key=kbmi_key
+            key=kbmi_key,
+            on_change=_update_company_options,  # refresh second filter when KBMI changes
         )
-    
-    if selected_kbmi:
-        valid_companies = (
-            df.loc[df["kbmi_type"].isin(selected_kbmi), "company_name"]
-            .dropna().drop_duplicates().sort_values().tolist()
-        )
-    else:
-        # if no KBMI selected, allow all companies (or set to [] if you prefer)
-        valid_companies = sorted(df["company_name"].dropna().unique().tolist())
-
-    # Preserve previously selected companies that are still valid
-    prev_companies = st.session_state.get("selected_companies", [])
-    default_companies = [c for c in prev_companies if c in valid_companies]
 
     selected_companies = st.multiselect(
         f"Select companies for Chart {index+1}",
-        options=list_companies_to_check,
-        default=default_companies,
-        key=company_key
+        options=st.session_state.valid_companies,
+        default=st.session_state.company_selected,
+        key=company_key,
+        disabled=(len(st.session_state.kbmi_selected) == 0),  # optional: lock until KBMI chosen
     )
 
     col3, col4 = st.columns(2)
@@ -181,16 +195,10 @@ def render_multi_company_chart(index: int):
 
     df_filtered = df.copy()
 
-    # if submitted and start_date <= end_date:
-    #     df_filtered = df_filtered[
-    #         (df_filtered['posisi'].dt.date >= start_date) &
-    #         (df_filtered['posisi'].dt.date <= end_date)
-    #     ]
-
     mask_posisi = ((df_filtered['posisi'].dt.date >= start_date) &
             (df_filtered['posisi'].dt.date <= end_date)) if (submitted and start_date <= end_date) else True
-    mask_kbmi_type = df_filtered["kbmi_type"].isin(selected_kbmi) if selected_kbmi else True
-    mask_company_name = df_filtered["company_name"].isin(selected_companies) if selected_companies else True
+    mask_kbmi_type = df_filtered["kbmi_type"].isin(st.session_state.kbmi_selected) if st.session_state.kbmi_selected else True
+    mask_company_name = df_filtered["company_name"].isin(st.session_state.company_selected) if st.session_state.company_selected else True
     mask_year = df_filtered["year"].isin(selected_year) if selected_year else True
     mask_quarter = df_filtered["quarter"].isin(selected_quartile) if selected_quartile else True
 
@@ -198,14 +206,6 @@ def render_multi_company_chart(index: int):
     df_filtered = df_filtered[
         mask_posisi & mask_kbmi_type & mask_company_name & mask_year & mask_quarter
     ]
-    # df_filtered = df_filtered[
-    #     (df_filtered["company_name"].isin(selected_companies)) &
-    #     (df_filtered["kbmi_type"].isin(selected_kbmi)) &
-    #     (df_filtered["year"].isin(selected_year)) &
-    #     (df_filtered["quarter"].isin(selected_quartile)) &
-    #     (df_filtered["posisi"] >= pd.to_datetime(start_date)) &
-    #     (df_filtered["posisi"] <= pd.to_datetime(end_date))
-    # ]
 
     # Plot
     fig = px.line(
