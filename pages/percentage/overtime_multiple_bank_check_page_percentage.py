@@ -9,7 +9,7 @@ from pathlib import Path
 # add "../data" to sys.path
 sys.path.append(str(Path(__file__).resolve().parents[2] / "data"))
 
-from import_data import import_rasio
+from import_data import import_rasio, import_fitur_rasio, import_dictionary_rasio
 
 st.markdown("# Overtime Multiple Bank Persentase")
 
@@ -74,13 +74,7 @@ df['company_name'] = pd.Categorical(df['company_name'], categories=sorted_compan
 list_companies_to_check = sorted_companies
 
 # Placeholder for list of features that can be checked
-list_columns_to_check = [
-    'npl_gross',
-    'npl_net',
-    'return_on_asset',
-    'return_on_equity',
-    'net_interest_margin'
-]
+list_columns_to_check = import_fitur_rasio()
 
 # Ensure quarter sorting is applied
 df['sort_key'] = df['year_quarter'].apply(quarter_sort_key)
