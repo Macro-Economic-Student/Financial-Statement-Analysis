@@ -141,6 +141,19 @@ def render_multi_company_chart(index: int):
             default=default_kbmi,
             key=kbmi_key
         )
+    
+    if selected_kbmi:
+        valid_companies = (
+            df.loc[df["kbmi_type"].isin(selected_kbmi), "company_name"]
+            .dropna().drop_duplicates().sort_values().tolist()
+        )
+    else:
+        # if no KBMI selected, allow all companies (or set to [] if you prefer)
+        valid_companies = sorted(df["company_name"].dropna().unique().tolist())
+
+    # Preserve previously selected companies that are still valid
+    prev_companies = st.session_state.get("selected_companies", [])
+    default_companies = [c for c in prev_companies if c in valid_companies]
 
     selected_companies = st.multiselect(
         f"Select companies for Chart {index+1}",
