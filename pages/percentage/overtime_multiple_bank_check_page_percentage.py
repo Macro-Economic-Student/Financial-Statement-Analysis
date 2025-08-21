@@ -181,21 +181,31 @@ def render_multi_company_chart(index: int):
 
     df_filtered = df.copy()
 
-    if submitted and start_date <= end_date:
-        df_filtered = df_filtered[
-            (df_filtered['posisi'].dt.date >= start_date) &
-            (df_filtered['posisi'].dt.date <= end_date)
-        ]
+    # if submitted and start_date <= end_date:
+    #     df_filtered = df_filtered[
+    #         (df_filtered['posisi'].dt.date >= start_date) &
+    #         (df_filtered['posisi'].dt.date <= end_date)
+    #     ]
+
+    mask_posisi = ((df_filtered['posisi'].dt.date >= start_date) &
+            (df_filtered['posisi'].dt.date <= end_date)) if (submitted and start_date <= end_date) else True
+    mask_kbmi_type = df_filtered["kbmi_type"].isin(selected_kbmi) if selected_kbmi else True
+    mask_company_name = df_filtered["company_name"].isin(selected_companies) if selected_companies else True
+    mask_year = df_filtered["year"].isin(selected_year) if selected_year else True
+    mask_quarter = df_filtered["quarter"].isin(selected_quartile) if selected_quartile else True
 
     # Filtered data based on company and date range
     df_filtered = df_filtered[
-        (df_filtered["company_name"].isin(selected_companies)) &
-        (df_filtered["kbmi_type"].isin(selected_kbmi)) &
-        (df_filtered["year"].isin(selected_year)) &
-        (df_filtered["quarter"].isin(selected_quartile)) &
-        (df_filtered["posisi"] >= pd.to_datetime(start_date)) &
-        (df_filtered["posisi"] <= pd.to_datetime(end_date))
+        mask_posisi & mask_kbmi_type & mask_company_name & mask_year & mask_quarter
     ]
+    # df_filtered = df_filtered[
+    #     (df_filtered["company_name"].isin(selected_companies)) &
+    #     (df_filtered["kbmi_type"].isin(selected_kbmi)) &
+    #     (df_filtered["year"].isin(selected_year)) &
+    #     (df_filtered["quarter"].isin(selected_quartile)) &
+    #     (df_filtered["posisi"] >= pd.to_datetime(start_date)) &
+    #     (df_filtered["posisi"] <= pd.to_datetime(end_date))
+    # ]
 
     # Plot
     fig = px.line(
