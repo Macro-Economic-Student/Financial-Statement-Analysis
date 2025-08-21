@@ -208,7 +208,7 @@ def render_multi_company_chart(index: int):
         y=column_to_check,
         color='company_name',
         markers=True,
-        title=f"{column_to_check} Over Time (Chart {index+1})"
+        title=f"{selected_display} Over Time (Chart {index+1})"
     )
 
     # Compute summary stats from filtered data
@@ -252,7 +252,7 @@ def render_multi_company_chart(index: int):
     # Lock x-axis order
     fig.update_layout(
         xaxis_title="Year Quarter",
-        yaxis_title=column_to_check,
+        yaxis_title=selected_display,
         xaxis=dict(categoryorder='array', categoryarray=df_filtered['year_quarter'].unique()),
         yaxis=dict(tickformat=".2%"),
         legend_traceorder="normal",
