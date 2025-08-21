@@ -76,12 +76,20 @@ list_companies_to_check = sorted_companies
 # Placeholder for list of features that can be checked
 list_columns_to_check = import_fitur_rasio()
 
+# Placeholder for dictionary of features that can be checked
+dict_rasio = import_dictionary_rasio()
+# Build the display list from dictionary values
+item_dict_list = [dict_rasio[item] for item in list_columns_to_check]
+# Map back from display value -> original key
+reverse_map = {dict_rasio[item]: item for item in list_columns_to_check}
+
 # Ensure quarter sorting is applied
 df['sort_key'] = df['year_quarter'].apply(quarter_sort_key)
 df = df.sort_values(by='sort_key')
 
 # Default values
 default_feature = "ROA" if "ROA" in list_columns_to_check else list_columns_to_check[0]
+default_display = dict_rasio[default_feature]
 default_companies = list_companies_to_check[:2]
 default_year = sorted_year
 default_quartile = sorted_quartile
@@ -124,12 +132,14 @@ def render_multi_company_chart(index: int):
     # Selectors
     col1, col2 = st.columns(2)
     with col1 :
-        column_to_check = st.selectbox(
+        selected_display = st.selectbox(
             f"Select feature for Chart {index+1}",
-            options=list_columns_to_check,
-            index=list(list_columns_to_check).index(default_feature),
+            options=item_dict_list,
+            index=item_dict_list.index(default_display),
             key=col_key
         )
+        # Convert back to original column key
+        column_to_check = reverse_map[selected_display]
     
     with col2 :
         selected_kbmi = st.multiselect(
