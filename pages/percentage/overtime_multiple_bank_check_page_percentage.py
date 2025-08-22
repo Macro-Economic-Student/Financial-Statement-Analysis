@@ -5,6 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import sys
 from pathlib import Path
+import operator
 
 # add "../data" to sys.path
 sys.path.append(str(Path(__file__).resolve().parents[2] / "data"))
@@ -102,11 +103,15 @@ def render_multi_company_chart(index: int):
     col_key = f"feature_selector_{index}"
     company_key = f"company_selector_{index}"
     date_key = f"date_range_selector_{index}"
+    date_form_key = f"date_form_{index}"
     year_key = f"year_selector_{index}"
     quartile_key = f"quartile_selector_{index}"
     kbmi_key = f"kbmi_selector_{index}"
     chart_key = f"plotly_chart_{index}"
     df_key = f"plotly_df_{index}"
+    sign_selectbox_key = f"sign_selectbox_{index}"
+    percent_number_input_key = f"percent_number_input_{index}"
+    df_form_key = f"plotly_df_form_{index}"
 
     # Check if 'posisi' is already in datetime format, if not, convert it
     if not pd.api.types.is_datetime64_any_dtype(df['posisi']):
@@ -119,7 +124,7 @@ def render_multi_company_chart(index: int):
     # df_filtered for dataframe that will be changed
     df_filtered = df.copy()
 
-    with st.form(key=f"date_form_{index}"):
+    with st.form(key=date_form_key):
         start_date, end_date = st.date_input(
             f"Select date range for Chart {index+1}",
             value=(min_date, max_date),
@@ -260,12 +265,12 @@ def render_multi_company_chart(index: int):
     )
 
     # Layout the chart and the stats side by side
-    col1, col2 = st.columns([3, 1])
+    col5, col6 = st.columns([3, 1])
 
-    with col1:
+    with col5:
         st.plotly_chart(fig, use_container_width=True, key=chart_key)
 
-    with col2:
+    with col6:
         summary_df = pd.DataFrame.from_dict(stats, orient='index', columns=['Value'])
         summary_df = summary_df.loc[[
             "Min", "P5", "P15", "Q1 (25%)", "Mean", "Median",
@@ -273,6 +278,76 @@ def render_multi_company_chart(index: int):
         ]]
         summary_df = summary_df.applymap(lambda x: f"{x:.2%}")
         st.dataframe(summary_df, use_container_width=True, key=df_key)
+
+    # 
+
+    # Map UI labels -> comparison functions
+    SIGN_MAP = {
+        "less": operator.lt,                       # <
+        "less than or same": operator.le,          # <=
+        "same": "eq",                              # == with tolerance
+        "more than or same": operator.ge,          # >=
+        "more": operator.gt                        # >
+    }
+
+    with st.form("rule_form", clear_on_submit=False):
+        st.subheader("Rule Checker")
+
+        # 👇 Add explanatory text
+        st.markdown(
+            f"""
+            Use this form to check how many rows in your dataset satisfy a rule.  
+            - **Feature selected:** `{selected_display}`  
+            - Choose a **sign** (e.g., less, same, more),  
+            - Enter a **number** (percent), and  
+            - Click **Apply** to see how many rows meet that condition.  
+            """
+        )
+        
+        sign = st.selectbox(
+            "Sign",
+            options=list(SIGN_MAP.keys()),
+            index=0,
+            key=sign_selectbox_key
+        )
+        # number is a percent input; we divide by 100 for comparison
+        number = st.number_input(
+            "Number (percent)", 
+            min_value=None, 
+            max_value=None, 
+            value=30.0, 
+            step=0.1, 
+            format="%.4f",
+            key=percent_number_input_key
+        )
+        submitted_rule_form = st.form_submit_button("Apply")
+
+        if submitted_rule_form:
+            threshold = float(number) / 100.0
+            s = pd.to_numeric(df_filtered[column_to_check], errors="coerce")
+
+            if SIGN_MAP[sign] == "eq":
+                tol = 1e-9
+                mask = np.isfinite(s) & (np.abs(s - threshold) <= tol)
+            else:
+                cmp_fn = SIGN_MAP[sign]
+                mask = np.isfinite(s) & cmp_fn(s, threshold)
+
+            valid_count = int(mask.sum())
+            total_used = int(np.isfinite(s).sum())
+            valid_pct = (valid_count / total_used * 100.0) if total_used > 0 else 0.0
+
+            result_df = pd.DataFrame([{
+                "feature": column_to_check,
+                "rule": f"{selected_display} {sign} {number}%",
+                "valid_rows": valid_count,
+                "total_rows_used": total_used,
+                "valid_percent": f"{valid_pct:.2f}%"
+            }])
+
+            # Show inside form box
+            st.dataframe(result_df, use_container_width=True, key=df_form_key)
+
 
 # --- Render all three charts ---
 st.markdown("## 📈 Multi-Line Comparisons: Company vs Feature Over Time")
