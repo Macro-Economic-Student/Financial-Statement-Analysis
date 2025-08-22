@@ -109,6 +109,7 @@ def render_multi_company_chart(index: int):
     kbmi_key = f"kbmi_selector_{index}"
     chart_key = f"plotly_chart_{index}"
     df_key = f"plotly_df_{index}"
+    rule_form_key = f"rule_form_{index}"
     sign_selectbox_key = f"sign_selectbox_{index}"
     percent_number_input_key = f"percent_number_input_{index}"
     df_form_key = f"plotly_df_form_{index}"
@@ -290,7 +291,7 @@ def render_multi_company_chart(index: int):
         "more": operator.gt                        # >
     }
 
-    with st.form("rule_form", clear_on_submit=False):
+    with st.form(key=rule_form_key, clear_on_submit=False):
         st.subheader("Rule Checker")
 
         # 👇 Add explanatory text
@@ -303,7 +304,7 @@ def render_multi_company_chart(index: int):
             - Click **Apply** to see how many rows meet that condition.  
             """
         )
-        
+
         sign = st.selectbox(
             "Sign",
             options=list(SIGN_MAP.keys()),
