@@ -223,12 +223,14 @@ def render_multi_company_chart(index: int):
     stats = {
         "Min": values.min(),
         "P5": np.percentile(values, 5),
+        "P10": np.percentile(values, 10),
         "P15": np.percentile(values, 15),
         "Q1 (25%)": values.quantile(0.25),
         "Mean": values.mean(),
         "Median": values.median(),
         "Q3 (75%)": values.quantile(0.75),
         "P85": np.percentile(values, 85),
+        "P90": np.percentile(values, 90),
         "P95": np.percentile(values, 95),
         "Max": values.max(),
         "Std": values.std()
@@ -274,8 +276,8 @@ def render_multi_company_chart(index: int):
     with col6:
         summary_df = pd.DataFrame.from_dict(stats, orient='index', columns=['Value'])
         summary_df = summary_df.loc[[
-            "Min", "P5", "P15", "Q1 (25%)", "Mean", "Median",
-            "Q3 (75%)", "P85", "P95", "Max", "Std"
+            "Min", "P5", "P10", "P15", "Q1 (25%)", "Mean", "Median",
+            "Q3 (75%)", "P85", "P90", "P95", "Max", "Std"
         ]]
         summary_df = summary_df.applymap(lambda x: f"{x:.2%}")
         st.dataframe(summary_df, use_container_width=True, key=df_key)
