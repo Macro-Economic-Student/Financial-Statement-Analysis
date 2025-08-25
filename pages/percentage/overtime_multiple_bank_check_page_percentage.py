@@ -282,71 +282,106 @@ def render_multi_company_chart(index: int):
 
     # 
 
-    # Map UI labels -> comparison functions
+    # 1) Add 'between' without changing existing signs
     SIGN_MAP = {
-        "less": operator.lt,                       # <
-        "less than or same": operator.le,          # <=
-        "same": "eq",                              # == with tolerance
-        "more than or same": operator.ge,          # >=
-        "more": operator.gt                        # >
+        "less": operator.lt,                 # <
+        "less than or same": operator.le,    # <=
+        "same": "eq",                        # == with tolerance
+        "more than or same": operator.ge,    # >=
+        "more": operator.gt,                 # >
+        "between": "between"                 # inclusive range [low, high]
     }
-
+    
     with st.form(key=rule_form_key, clear_on_submit=False):
         st.subheader("Rule Checker")
-
-        # 👇 Add explanatory text
+    
         st.markdown(
             f"""
             Use this form to check how many rows in your dataset satisfy a rule.  
             - **Feature selected:** `{selected_display}`  
-            - Choose a **sign** (e.g., less, same, more),  
-            - Enter a **number** (percent), and  
+            - Choose a **sign** (e.g., less, same, more, **between**),  
+            - Enter a **number** (percent) — or two numbers if using **between**, and  
             - Click **Apply** to see how many rows meet that condition.  
             """
         )
-
+    
         sign = st.selectbox(
             "Sign",
             options=list(SIGN_MAP.keys()),
             index=0,
             key=sign_selectbox_key
         )
-        # number is a percent input; we divide by 100 for comparison
-        number = st.number_input(
-            "Number (percent)", 
-            min_value=None, 
-            max_value=None, 
-            value=30.0, 
-            step=0.1, 
-            format="%.4f",
-            key=percent_number_input_key
-        )
+    
+        # 2) Inputs:
+        #    - Single number for all signs except 'between'
+        #    - Two numbers (low & high) for 'between'
+        if sign == "between":
+            number_low = st.number_input(
+                "Lower bound (percent)",
+                min_value=None, max_value=None,
+                value=10.0, step=0.1, format="%.4f",
+                key=f"{percent_number_input_key}_low"
+            )
+            number_high = st.number_input(
+                "Upper bound (percent)",
+                min_value=None, max_value=None,
+                value=30.0, step=0.1, format="%.4f",
+                key=f"{percent_number_input_key}_high"
+            )
+        else:
+            number = st.number_input(
+                "Number (percent)", 
+                min_value=None, 
+                max_value=None, 
+                value=30.0, 
+                step=0.1, 
+                format="%.4f",
+                key=percent_number_input_key
+            )
+    
         submitted_rule_form = st.form_submit_button("Apply")
-
+    
         if submitted_rule_form:
-            threshold = float(number) / 100.0
             s = pd.to_numeric(df_filtered[column_to_check], errors="coerce")
-
+    
             if SIGN_MAP[sign] == "eq":
+                # existing equality logic (unchanged)
+                threshold = float(number) / 100.0
                 tol = 1e-9
                 mask = np.isfinite(s) & (np.abs(s - threshold) <= tol)
+    
+                rule_text = f"{selected_display} {sign} {number}%"
+    
+            elif SIGN_MAP[sign] == "between":
+                # 3) New 'between' logic (inclusive), still dividing inputs by 100
+                low = float(number_low) / 100.0
+                high = float(number_high) / 100.0
+                if low > high:
+                    low, high = high, low  # swap to be safe
+    
+                mask = np.isfinite(s) & (s >= low) & (s <= high)
+                rule_text = f"{selected_display} between {number_low}% and {number_high}%"
+    
             else:
+                # existing comparison logic (unchanged)
+                threshold = float(number) / 100.0
                 cmp_fn = SIGN_MAP[sign]
                 mask = np.isfinite(s) & cmp_fn(s, threshold)
-
+    
+                rule_text = f"{selected_display} {sign} {number}%"
+    
             valid_count = int(mask.sum())
             total_used = int(np.isfinite(s).sum())
             valid_pct = (valid_count / total_used * 100.0) if total_used > 0 else 0.0
-
+    
             result_df = pd.DataFrame([{
                 "feature": column_to_check,
-                "rule": f"{selected_display} {sign} {number}%",
+                "rule": rule_text,
                 "valid_rows": valid_count,
                 "total_rows_used": total_used,
                 "valid_percent": f"{valid_pct:.2f}%"
             }])
-
-            # Show inside form box
+    
             st.dataframe(result_df, use_container_width=True, key=df_form_key)
 
 
