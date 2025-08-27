@@ -4,7 +4,7 @@ This repository contains a **Streamlit web app** for visualizing quarterly finan
 
 Link for Streamlit Dashboard : 
 
-[link text](https://financial-statement-analysis-exnxq8kyrofvhf89ejkfby.streamlit.app/overtime_multiple_bank_check_page_percentage)
+[Streamlit Link](https://financial-statement-analysis-exnxq8kyrofvhf89ejkfby.streamlit.app/overtime_multiple_bank_check_page_percentage)
 
 ---
 
