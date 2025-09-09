@@ -23,6 +23,7 @@ def import_rasio() -> pd.DataFrame:
     file1 = base_path / "summarized rasio - KBMI 1.xlsx"
     file4 = base_path / "summarized rasio - KBMI 4.xlsx"
     file_aset_4 = base_path / "summarized fitur aset - KBMI 4.xlsx"
+    file_liabilitas_4 = base_path / "summarized fitur liabilitas - KBMI 4.xlsx"
 
     # Read all data files
     df_kbmi_1 = pd.read_excel(file1)
@@ -32,12 +33,27 @@ def import_rasio() -> pd.DataFrame:
 
     df_aset_4 = pd.read_excel(file_aset_4)
 
-    # Combining all dataframes
+    df_liabilitas_4 = pd.read_excel(file_liabilitas_4)
+
+    # Combining df with df_aset_4
     df = pd.concat([df_kbmi_1, df_kbmi_4], axis=0, join="outer", ignore_index=True)
 
     df = pd.merge(
         df,
         df_aset_4,
+        on=['posisi', 'company_name'],
+        how='left',
+        suffixes=("", "_df2")
+    )
+
+    # drop only the df2 versions of excluded columns
+    drop_cols = [f"{c}_df2" for c in exclude_cols if f"{c}_df2" in df.columns]
+    df = df.drop(columns=drop_cols, errors="ignore")
+
+    # Combining df with df_liabilitas_4
+    df = pd.merge(
+        df,
+        df_liabilitas_4,
         on=['posisi', 'company_name'],
         how='left',
         suffixes=("", "_df2")
@@ -69,7 +85,11 @@ def import_fitur_rasio() -> list :
         'reverse_repo_per_total_aset',
         'tagihan_akseptasi_per_total_aset',
         'kyd_dan_pembiayaan_syariah_per_total_aset',
-        'ckpn_aset_keuangan_per_kyd_dan_pembiayaan_syariah'
+        'ckpn_aset_keuangan_per_kyd_dan_pembiayaan_syariah',
+
+        # Fitur dari Liabilitas
+        'casa_ratio',
+        'rim_ratio',
     ]
 
     return(fitur_rasio)
@@ -95,6 +115,10 @@ def import_dictionary_rasio() -> dict :
         'tagihan_akseptasi_per_total_aset' : 'Tagihan Akseptasi per Total Aset',
         'kyd_dan_pembiayaan_syariah_per_total_aset' : 'KYD dan Pembiayaan Syariah per Total Aset',
         'ckpn_aset_keuangan_per_kyd_dan_pembiayaan_syariah' : 'CKPN Aset Keuangan per KYD dan Pembiayaan Syariah',
+
+        # Fitur dari Liabilitas
+        'casa_ratio' : 'CASA Ratio',
+        'rim_ratio' : 'RIM Ratio',
     }
 
     return(dict_rasio)
