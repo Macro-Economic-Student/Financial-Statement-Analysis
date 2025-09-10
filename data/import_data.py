@@ -1,6 +1,22 @@
 import pandas as pd
 from pathlib import Path
 
+def merge_two_df(df1: pd.DataFrame, df2: pd.DataFrame, on: list, exclude_cols: list) -> pd.DataFrame:
+    # Combining df with df_kpmm_4
+    df = pd.merge(
+        df1,
+        df2,
+        on=on,
+        how='left',
+        suffixes=("", "_df2")
+    )
+
+    # drop only the df2 versions of excluded columns
+    drop_cols = [f"{c}_df2" for c in exclude_cols if f"{c}_df2" in df.columns]
+    df = df.drop(columns=drop_cols, errors="ignore")
+
+    return df
+
 def import_rasio() -> pd.DataFrame:
     """
     Import all Rasio data into one dataframe
@@ -24,6 +40,7 @@ def import_rasio() -> pd.DataFrame:
     file4 = base_path / "summarized rasio - KBMI 4.xlsx"
     file_aset_4 = base_path / "summarized fitur aset - KBMI 4.xlsx"
     file_liabilitas_4 = base_path / "summarized fitur liabilitas - KBMI 4.xlsx"
+    file_kpmm_4 = base_path / "summarized fitur kpmm - KBMI 4.xlsx"
 
     # Read all data files
     df_kbmi_1 = pd.read_excel(file1)
@@ -35,33 +52,19 @@ def import_rasio() -> pd.DataFrame:
 
     df_liabilitas_4 = pd.read_excel(file_liabilitas_4)
 
-    # Combining df with df_aset_4
+    df_kpmm_4 = pd.read_excel(file_kpmm_4)
+
+    # Combining df rasio KBMI 1 and KBMI 4
     df = pd.concat([df_kbmi_1, df_kbmi_4], axis=0, join="outer", ignore_index=True)
 
-    df = pd.merge(
-        df,
-        df_aset_4,
-        on=['posisi', 'company_name'],
-        how='left',
-        suffixes=("", "_df2")
-    )
-
-    # drop only the df2 versions of excluded columns
-    drop_cols = [f"{c}_df2" for c in exclude_cols if f"{c}_df2" in df.columns]
-    df = df.drop(columns=drop_cols, errors="ignore")
+    # Combining df with df_aset_4
+    df = merge_two_df(df, df_aset_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_liabilitas_4
-    df = pd.merge(
-        df,
-        df_liabilitas_4,
-        on=['posisi', 'company_name'],
-        how='left',
-        suffixes=("", "_df2")
-    )
+    df = merge_two_df(df, df_liabilitas_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
-    # drop only the df2 versions of excluded columns
-    drop_cols = [f"{c}_df2" for c in exclude_cols if f"{c}_df2" in df.columns]
-    df = df.drop(columns=drop_cols, errors="ignore")
+    # Combining df with df_kpmm_4
+    df = merge_two_df(df, df_kpmm_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     return df
 
@@ -90,6 +93,12 @@ def import_fitur_rasio() -> list :
         # Fitur dari Liabilitas
         'casa_ratio',
         'rim_ratio',
+
+        # Fitur dari Modal
+        'kpmm_per_car',
+        'kpmm_cet1',
+        'modal_terhadap_aset',
+        'modal_terhadap_kredit_bersih',
     ]
 
     return(fitur_rasio)
@@ -119,6 +128,12 @@ def import_dictionary_rasio() -> dict :
         # Fitur dari Liabilitas
         'casa_ratio' : 'CASA Ratio',
         'rim_ratio' : 'RIM Ratio',
+
+        # Fitur dari Modal
+        'kpmm_per_car' : 'KPMM per CAR',
+        'kpmm_cet1' : 'KPMM CET-1',
+        'modal_terhadap_aset' : 'Modal terhadap Aset',
+        'modal_terhadap_kredit_bersih' : 'Modal terhadap Kredit Bersih',
     }
 
     return(dict_rasio)
