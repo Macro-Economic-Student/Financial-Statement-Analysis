@@ -41,6 +41,7 @@ def import_rasio() -> pd.DataFrame:
     file_aset_4 = base_path / "summarized fitur aset - KBMI 4.xlsx"
     file_liabilitas_4 = base_path / "summarized fitur liabilitas - KBMI 4.xlsx"
     file_kpmm_4 = base_path / "summarized fitur kpmm - KBMI 4.xlsx"
+    file_kualitas_4 = base_path / "summarized fitur Kualitas Aset - KBMI 4.xlsx"
 
     # Read all data files
     df_kbmi_1 = pd.read_excel(file1)
@@ -54,6 +55,8 @@ def import_rasio() -> pd.DataFrame:
 
     df_kpmm_4 = pd.read_excel(file_kpmm_4)
 
+    df_kualitas_4 = pd.read_excel(file_kualitas_4)
+
     # Combining df rasio KBMI 1 and KBMI 4
     df = pd.concat([df_kbmi_1, df_kbmi_4], axis=0, join="outer", ignore_index=True)
 
@@ -65,6 +68,9 @@ def import_rasio() -> pd.DataFrame:
 
     # Combining df with df_kpmm_4
     df = merge_two_df(df, df_kpmm_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining df with df_kualitas_4
+    df = merge_two_df(df, df_kualitas_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     return df
 
@@ -99,6 +105,14 @@ def import_fitur_rasio() -> list :
         'kpmm_cet1',
         'modal_terhadap_aset',
         'modal_terhadap_kredit_bersih',
+
+        # Fitur dari Kualitas Aset
+        'ckpn_per_kredit_restruk',
+        'ckpn_stage_2_3_per_kredit_restruk',
+        'kredit_bermasalah_dan_restruk_per_kredit_yang_diberikan',
+        'kredit_restruk_per_modal_inti',
+        'laba_per_kredit_bermasalah_non_restruk',
+        'laba_per_kredit_restruk',
     ]
 
     return(fitur_rasio)
@@ -134,6 +148,14 @@ def import_dictionary_rasio() -> dict :
         'kpmm_cet1' : 'KPMM CET-1',
         'modal_terhadap_aset' : 'Modal terhadap Aset',
         'modal_terhadap_kredit_bersih' : 'Modal terhadap Kredit Bersih',
+
+        # Fitur dari Kualitas Aset
+        'ckpn_per_kredit_restruk' : 'Total CKPN per Kredit Restruk',
+        'ckpn_stage_2_3_per_kredit_restruk' : 'CKPN Stage 2 & 3 per Kredit Restruk',
+        'kredit_bermasalah_dan_restruk_per_kredit_yang_diberikan' : 'Kredit yang Restruk + Kredit Bermasalah non Restruk per Kredit yang Diberikan',
+        'kredit_restruk_per_modal_inti' : 'Kredit yang Restruk per Modal Inti',
+        'laba_per_kredit_bermasalah_non_restruk' : 'Laba per Kredit Bermasalah non Restruk',
+        'laba_per_kredit_restruk' : 'Laba per Kredirt Restruk',
     }
 
     return(dict_rasio)
