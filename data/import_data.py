@@ -155,7 +155,7 @@ def import_dictionary_rasio() -> dict :
         'kredit_bermasalah_dan_restruk_per_kredit_yang_diberikan' : 'Kredit yang Restruk + Kredit Bermasalah non Restruk per Kredit yang Diberikan',
         'kredit_restruk_per_modal_inti' : 'Kredit yang Restruk per Modal Inti',
         'laba_per_kredit_bermasalah_non_restruk' : 'Laba per Kredit Bermasalah non Restruk',
-        'laba_per_kredit_restruk' : 'Laba per Kredirt Restruk',
+        'laba_per_kredit_restruk' : 'Laba per Kredit Restruk',
     }
 
     return(dict_rasio)
