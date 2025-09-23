@@ -173,3 +173,58 @@ def import_dictionary_rasio() -> dict :
     }
 
     return(dict_rasio)
+
+# ----------------------------------------------------------------------------------------
+
+# Code for numeric data
+
+def import_numerik() -> pd.DataFrame:
+    """
+    Import all Rasio data into one dataframe
+    """
+
+    exclude_cols = [
+        'posisi',
+        'company_name',
+        'kbmi_type',
+        'year',
+        'quarter',
+        'year_quarter',
+        'company_date',
+    ]
+    
+    # Path to this file's folder ("data")
+    base_path = Path(__file__).parent
+
+    # Build absolute paths to the Excel files
+    file4 = base_path / "summarized fitur Numeric - KBMI 4.xlsx"
+    # file_aset_4 = base_path / "summarized fitur aset - KBMI 4.xlsx"
+
+    # Read all data files
+    df_kbmi_4 = pd.read_excel(file4)
+
+    # df_aset_4 = pd.read_excel(file_aset_4)
+
+    # Combining df rasio KBMI 1 and KBMI 4
+    df = df_kbmi_4.copy()
+
+    # # Combining df with df_aset_4
+    # df = merge_two_df(df, df_aset_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    return df
+
+def import_fitur_numerik() -> list :
+    fitur_numerik = [
+        'total_ckpn_stage_2_dan_3',
+        'total_npl_dan_restruk_npl',
+    ]
+
+    return(fitur_numerik)
+
+def import_dictionary_numerik() -> dict :
+    dict_numerik = {
+        'total_ckpn_stage_2_dan_3': 'CKPN Stage 2 dan 3',
+        'total_npl_dan_restruk_npl': 'Total NPL dan Restruk NPL',
+    }
+
+    return(dict_numerik)
