@@ -32,6 +32,7 @@ Link for Streamlit Dashboard :
 │   ├── Rasio.xlsx
 │   ├── import_data.py
 │   ├── summarized fitur Kualitas Aset - KBMI 4.xlsx
+│   ├── summarized fitur Laba Rugi - KBMI 4.xlsx
 │   ├── summarized fitur aset - KBMI 4.xlsx
 │   ├── summarized fitur kpmm - KBMI 4.xlsx
 │   ├── summarized fitur liabilitas - KBMI 4.xlsx
@@ -57,7 +58,7 @@ Link for Streamlit Dashboard :
 │   └── percentage
 └── requirements.txt
 
-10 directories, 24 files
+10 directories, 25 files
 ```
 <!-- END STRUCTURE -->
 
