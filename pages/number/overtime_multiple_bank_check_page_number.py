@@ -321,13 +321,13 @@ def render_multi_company_chart(index: int):
             number_low = st.number_input(
                 "Lower bound (numeric)",
                 min_value=None, max_value=None,
-                value=10.0, step=10, format=",.4f",
+                value=10.0, step=10.0, format=",.4f",
                 key=f"{numeric_number_input_key}_low"
             )
             number_high = st.number_input(
                 "Upper bound (numeric)",
                 min_value=None, max_value=None,
-                value=30.0, step=10, format=",.4f",
+                value=30.0, step=10.0, format=",.4f",
                 key=f"{numeric_number_input_key}_high"
             )
         else:
@@ -336,7 +336,7 @@ def render_multi_company_chart(index: int):
                 min_value=None, 
                 max_value=None, 
                 value=30.0, 
-                step=10, 
+                step=10.0, 
                 format=",.4f",
                 key=numeric_number_input_key
             )
@@ -348,16 +348,16 @@ def render_multi_company_chart(index: int):
     
             if SIGN_MAP[sign] == "eq":
                 # existing equality logic (unchanged)
-                threshold = float(number) / 100.0
+                threshold = float(number)
                 tol = 1e-9
                 mask = np.isfinite(s) & (np.abs(s - threshold) <= tol)
     
-                rule_text = f"{selected_display} {sign} {number}%"
+                rule_text = f"{selected_display} {sign} {number}"
     
             elif SIGN_MAP[sign] == "between":
                 # 3) New 'between' logic (inclusive), still dividing inputs by 100
-                low = float(number_low) / 100.0
-                high = float(number_high) / 100.0
+                low = float(number_low)
+                high = float(number_high)
                 if low > high:
                     low, high = high, low  # swap to be safe
     
@@ -366,11 +366,11 @@ def render_multi_company_chart(index: int):
     
             else:
                 # existing comparison logic (unchanged)
-                threshold = float(number) / 100.0
+                threshold = float(number)
                 cmp_fn = SIGN_MAP[sign]
                 mask = np.isfinite(s) & cmp_fn(s, threshold)
     
-                rule_text = f"{selected_display} {sign} {number}%"
+                rule_text = f"{selected_display} {sign} {number}"
     
             valid_count = int(mask.sum())
             total_used = int(np.isfinite(s).sum())
