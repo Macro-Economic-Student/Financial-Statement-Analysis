@@ -321,13 +321,13 @@ def render_multi_company_chart(index: int):
             number_low = st.number_input(
                 "Lower bound (numeric)",
                 min_value=None, max_value=None,
-                value=10.0, step=10.0, format=",.4f",
+                value=10.0, step=10.0, format="%.4f",
                 key=f"{numeric_number_input_key}_low"
             )
             number_high = st.number_input(
                 "Upper bound (numeric)",
                 min_value=None, max_value=None,
-                value=30.0, step=10.0, format=",.4f",
+                value=30.0, step=10.0, format="%.4f",
                 key=f"{numeric_number_input_key}_high"
             )
         else:
@@ -337,7 +337,7 @@ def render_multi_company_chart(index: int):
                 max_value=None, 
                 value=30.0, 
                 step=10.0, 
-                format=",.4f",
+                format="%.4f",
                 key=numeric_number_input_key
             )
     
