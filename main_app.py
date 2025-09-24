@@ -26,8 +26,8 @@ ovt_single_bank_check_number = st.Page(
 
 pg = st.navigation(
     {
-        "Persentase" :[single_feat_check_percentage, ovt_multiple_bank_check_percentage, ovt_single_bank_check_percentage]
-        # "Angka" :[single_feat_check_number, ovt_single_bank_check_number, ovt_multiple_bank_check_number]
+        "Persentase" :[single_feat_check_percentage, ovt_multiple_bank_check_percentage, ovt_single_bank_check_percentage],
+        "Angka" :[single_feat_check_number, ovt_single_bank_check_number, ovt_multiple_bank_check_number]
     }
 )
 

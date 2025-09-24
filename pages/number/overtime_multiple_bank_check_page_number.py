@@ -111,7 +111,7 @@ def render_multi_company_chart(index: int):
     df_key = f"plotly_df_{index}"
     rule_form_key = f"rule_form_{index}"
     sign_selectbox_key = f"sign_selectbox_{index}"
-    percent_number_input_key = f"percent_number_input_{index}"
+    numeric_number_input_key = f"numeric_number_input_{index}"
     df_form_key = f"plotly_df_form_{index}"
 
     # Check if 'posisi' is already in datetime format, if not, convert it
@@ -252,7 +252,7 @@ def render_multi_company_chart(index: int):
                 mode="lines",
                 line=dict(color=color, dash="dash"),
                 name=label,
-                hovertemplate=f"{label}: {y_val:.2%}<extra></extra>",
+                hovertemplate=f"{label}: {y_val:,.4f}<extra></extra>",
                 showlegend=True
             )
         )
@@ -262,7 +262,7 @@ def render_multi_company_chart(index: int):
         xaxis_title="Year Quarter",
         yaxis_title=selected_display,
         xaxis=dict(categoryorder='array', categoryarray=df_filtered['year_quarter'].unique()),
-        yaxis=dict(tickformat=".2%"),
+        yaxis=dict(tickformat=",.4f"),
         legend_traceorder="normal",
         template="plotly_white"
     )
@@ -279,7 +279,7 @@ def render_multi_company_chart(index: int):
             "Min", "P5", "P10", "P15", "Q1 (25%)", "Mean", "Median",
             "Q3 (75%)", "P85", "P90", "P95", "Max", "Std"
         ]]
-        summary_df = summary_df.applymap(lambda x: f"{x:.2%}")
+        summary_df = summary_df.applymap(lambda x: f"{x:,.4f}")
         st.dataframe(summary_df, use_container_width=True, key=df_key)
 
     # 
@@ -319,26 +319,26 @@ def render_multi_company_chart(index: int):
         #    - Two numbers (low & high) for 'between'
         if sign == "between":
             number_low = st.number_input(
-                "Lower bound (percent)",
+                "Lower bound (numeric)",
                 min_value=None, max_value=None,
-                value=10.0, step=0.1, format="%.4f",
-                key=f"{percent_number_input_key}_low"
+                value=10.0, step=10, format=",.4f",
+                key=f"{numeric_number_input_key}_low"
             )
             number_high = st.number_input(
-                "Upper bound (percent)",
+                "Upper bound (numeric)",
                 min_value=None, max_value=None,
-                value=30.0, step=0.1, format="%.4f",
-                key=f"{percent_number_input_key}_high"
+                value=30.0, step=10, format=",.4f",
+                key=f"{numeric_number_input_key}_high"
             )
         else:
             number = st.number_input(
-                "Number (percent)", 
+                "Number (numeric)", 
                 min_value=None, 
                 max_value=None, 
                 value=30.0, 
-                step=0.1, 
-                format="%.4f",
-                key=percent_number_input_key
+                step=10, 
+                format=",.4f",
+                key=numeric_number_input_key
             )
     
         submitted_rule_form = st.form_submit_button("Apply")
@@ -362,7 +362,7 @@ def render_multi_company_chart(index: int):
                     low, high = high, low  # swap to be safe
     
                 mask = np.isfinite(s) & (s >= low) & (s <= high)
-                rule_text = f"{selected_display} between {number_low}% and {number_high}%"
+                rule_text = f"{selected_display} between {number_low} and {number_high}"
     
             else:
                 # existing comparison logic (unchanged)
