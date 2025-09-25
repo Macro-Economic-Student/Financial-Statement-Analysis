@@ -111,6 +111,7 @@ def import_fitur_rasio() -> list :
         'kpmm_cet1',
         'modal_terhadap_aset',
         'modal_terhadap_kredit_bersih',
+        'other_comprehensive_income_to_equity',
 
         # Fitur dari Kualitas Aset
         'ckpn_per_kredit_restruk',
@@ -121,7 +122,7 @@ def import_fitur_rasio() -> list :
         'laba_per_kredit_restruk',
 
         # Fitur dari Laba Rugi
-        'other_comprehensive_income',
+        # 'other_comprehensive_income',
         'kredit_restruk_per_pendapatan_bunga',
     ]
 
@@ -158,6 +159,7 @@ def import_dictionary_rasio() -> dict :
         'kpmm_cet1' : 'KPMM CET-1',
         'modal_terhadap_aset' : 'Modal terhadap Aset',
         'modal_terhadap_kredit_bersih' : 'Modal terhadap Kredit Bersih',
+        'other_comprehensive_income_to_equity' : 'Other Comprehensive Income',
 
         # Fitur dari Kualitas Aset
         'ckpn_per_kredit_restruk' : 'Total CKPN per Kredit Restruk',
@@ -168,7 +170,7 @@ def import_dictionary_rasio() -> dict :
         'laba_per_kredit_restruk' : 'Laba per Kredit Restruk',
 
         # Fitur dari Laba Rugi
-        'other_comprehensive_income' : 'Other Comprehensive Income',
+        # 'other_comprehensive_income' : 'Other Comprehensive Income',
         'kredit_restruk_per_pendapatan_bunga' : 'Kredit Restruk per Pendapatan Bunga',
     }
 
