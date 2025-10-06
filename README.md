@@ -36,6 +36,7 @@ Link for Streamlit Dashboard :
 │   ├── summarized fitur Numeric - KBMI 4.xlsx
 │   ├── summarized fitur aset - KBMI 4.xlsx
 │   ├── summarized fitur kpmm - KBMI 4.xlsx
+│   ├── summarized fitur lcr nsfr - KBMI 4.xlsx
 │   ├── summarized fitur liabilitas - KBMI 4.xlsx
 │   ├── summarized rasio - KBMI 1.xlsx
 │   ├── summarized rasio - KBMI 4.xlsx
@@ -59,7 +60,7 @@ Link for Streamlit Dashboard :
 │   └── percentage
 └── requirements.txt
 
-10 directories, 26 files
+10 directories, 27 files
 ```
 <!-- END STRUCTURE -->
 
