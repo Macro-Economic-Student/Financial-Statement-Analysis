@@ -43,6 +43,7 @@ def import_rasio() -> pd.DataFrame:
     file_kpmm_4 = base_path / "summarized fitur kpmm - KBMI 4.xlsx"
     file_kualitas_4 = base_path / "summarized fitur Kualitas Aset - KBMI 4.xlsx"
     file_laba_rugi_4 = base_path / "summarized fitur Laba Rugi - KBMI 4.xlsx"
+    file_lcr_nsfr_4 = base_path / "summarized fitur lcr nsfr - KBMI 4.xlsx"
 
     # Read all data files
     df_kbmi_1 = pd.read_excel(file1)
@@ -59,6 +60,8 @@ def import_rasio() -> pd.DataFrame:
     df_kualitas_4 = pd.read_excel(file_kualitas_4)
 
     df_laba_rugi_4 = pd.read_excel(file_laba_rugi_4)
+
+    df_lcr_nsfr_4 = pd.read_excel(file_lcr_nsfr_4)
 
     # Combining df rasio KBMI 1 and KBMI 4
     df = pd.concat([df_kbmi_1, df_kbmi_4], axis=0, join="outer", ignore_index=True)
@@ -77,6 +80,9 @@ def import_rasio() -> pd.DataFrame:
 
     # Combining df with df_laba_rugi_4
     df = merge_two_df(df, df_laba_rugi_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining df with df_laba_rugi_4
+    df = merge_two_df(df, df_lcr_nsfr_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     return df
 
@@ -124,6 +130,10 @@ def import_fitur_rasio() -> list :
         # Fitur dari Laba Rugi
         # 'other_comprehensive_income',
         'kredit_restruk_per_pendapatan_bunga',
+
+        # Fitur dari LCR dan NSFR
+        'lcr',
+        'nsfr',
     ]
 
     return(fitur_rasio)
@@ -172,6 +182,10 @@ def import_dictionary_rasio() -> dict :
         # Fitur dari Laba Rugi
         # 'other_comprehensive_income' : 'Other Comprehensive Income',
         'kredit_restruk_per_pendapatan_bunga' : 'Kredit Restruk per Pendapatan Bunga',
+
+        # Fitur dari LCR dan NSFR
+        'lcr' : 'LCR',
+        'nsfr' : 'NSFR',
     }
 
     return(dict_rasio)
