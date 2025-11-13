@@ -126,6 +126,7 @@ def import_fitur_rasio() -> list :
         'kredit_restruk_per_modal_inti',
         'laba_per_kredit_bermasalah_non_restruk',
         'laba_per_kredit_restruk',
+        'total_npl_dan_restruk_npl_per_kredit_yang_diberikan',
 
         # Fitur dari Laba Rugi
         # 'other_comprehensive_income',
@@ -178,6 +179,7 @@ def import_dictionary_rasio() -> dict :
         'kredit_restruk_per_modal_inti' : 'Kredit yang Restruk per Modal Inti',
         'laba_per_kredit_bermasalah_non_restruk' : 'Laba per Kredit Bermasalah non Restruk',
         'laba_per_kredit_restruk' : 'Laba per Kredit Restruk',
+        'total_npl_dan_restruk_npl_per_kredit_yang_diberikan' : 'LAR Ratio',
 
         # Fitur dari Laba Rugi
         # 'other_comprehensive_income' : 'Other Comprehensive Income',
@@ -233,6 +235,7 @@ def import_fitur_numerik() -> list :
     fitur_numerik = [
         'total_ckpn_stage_2_dan_3',
         'total_npl_dan_restruk_npl',
+        'total_kredit_yang_diberikan',
     ]
 
     return(fitur_numerik)
@@ -241,6 +244,7 @@ def import_dictionary_numerik() -> dict :
     dict_numerik = {
         'total_ckpn_stage_2_dan_3': 'CKPN Stage 2 dan 3',
         'total_npl_dan_restruk_npl': 'Total NPL dan Restruk NPL',
+        'total_kredit_yang_diberikan' : 'Total Kredit yang Diberikan',
     }
 
     return(dict_numerik)
