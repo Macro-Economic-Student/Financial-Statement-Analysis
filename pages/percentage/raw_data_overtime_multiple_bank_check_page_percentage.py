@@ -24,7 +24,7 @@ with st.sidebar:
     
         This page provides **comparative visualizations** of selected financial indicators across **multiple banks** over time.
 
-        📅 **Data Source:** Quarterly Financial Statements starting from **Q1 2023**
+        📅 **Data Source:** Quarterly Financial Statements starting from **Q1 2020**
 
         ---
 
@@ -36,10 +36,10 @@ with st.sidebar:
         ---
 
         📌 **Visualizations on this page:**
-        - 🔁 **Three multi-line charts**: Each one allows you to choose a feature (e.g., ROA) and visualize it for several selected companies across time
-        - ⚙️ Fully interactive controls: Select different features and banks for each chart independently
+        - 🔁 **Detail Table for Data**: Table allows you to choose a feature (e.g., ROA) and visualize it for several selected companies across time
+        - ⚙️ Fully interactive controls: Select different features and banks to customize your analysis
 
-        Use the dropdowns to customize your analysis. Each chart updates individually, so you can explore multiple comparisons at once.
+
         """
     )
 
@@ -115,3 +115,97 @@ rule_form_key = f"rule_form_{index}"
 sign_selectbox_key = f"sign_selectbox_{index}"
 percent_number_input_key = f"percent_number_input_{index}"
 df_form_key = f"plotly_df_form_{index}"
+
+
+# Check if 'posisi' is already in datetime format, if not, convert it
+if not pd.api.types.is_datetime64_any_dtype(df['posisi']):
+    df['posisi'] = pd.to_datetime(df['posisi'], errors='coerce')
+
+# Date filter
+min_date = df['posisi'].min()
+max_date = df['posisi'].max()
+
+# df_filtered for dataframe that will be changed
+df_filtered = df.copy()
+
+with st.form(key=date_form_key):
+    start_date, end_date = st.date_input(
+        f"Select date range for Chart {index+1}",
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date,
+        key=date_key
+    )
+    submitted = st.form_submit_button("Apply Date Filter")
+
+# Selectors
+col1, col2 = st.columns(2)
+with col1 :
+    selected_display = st.selectbox(
+        f"Select feature for Chart {index+1}",
+        options=item_dict_list,
+        index=item_dict_list.index(default_display),
+        key=col_key
+    )
+    # Convert back to original column key
+    column_to_check = reverse_map[selected_display]
+    
+with col2 :
+    selected_kbmi = st.multiselect(
+        f"Select KBMI for Chart {index+1}",
+        options=sorted_kbmi,
+        default=default_kbmi,
+        key=kbmi_key
+    )
+    
+if selected_kbmi:
+    valid_companies = (
+        df.loc[df["kbmi_type"].isin(selected_kbmi), "company_name"]
+        .dropna().drop_duplicates().sort_values().tolist()
+    )
+else:
+    # if no KBMI selected, allow all companies (or set to [] if you prefer)
+    valid_companies = sorted(df["company_name"].dropna().unique().tolist())
+
+selected_companies = st.multiselect(
+    f"Select companies for Chart {index+1}",
+    options=valid_companies,
+    default=valid_companies,
+    key=company_key
+)
+
+# Add mask for filtered dataframe
+mask_posisi = ((df_filtered['posisi'].dt.date >= start_date) &
+        (df_filtered['posisi'].dt.date <= end_date)) if (submitted and start_date <= end_date) else True
+mask_kbmi_type = df_filtered["kbmi_type"].isin(selected_kbmi) if selected_kbmi else True
+mask_company_name = df_filtered["company_name"].isin(selected_companies) if selected_companies else True
+
+
+# normalize year to numeric for sorting
+years_series = pd.to_numeric(df.loc[mask_kbmi_type & mask_company_name, "year"], errors="coerce")
+valid_years = sorted(years_series.dropna().astype(int).unique().tolist())
+
+col3, col4 = st.columns(2)
+
+with col3 :
+    selected_year = st.multiselect(
+        f"Select year for Chart {index+1}",
+        options=valid_years,
+        default=valid_years,
+        key=year_key
+    )
+with col4 :
+    selected_quartile = st.multiselect(
+        f"Select quartile for Chart {index+1}",
+        options=sorted_quartile,
+        default=default_quartile,
+        key=quartile_key
+    )
+
+mask_year = df_filtered["year"].isin(selected_year) if selected_year else True
+mask_quarter = df_filtered["quarter"].isin(selected_quartile) if selected_quartile else True
+
+# Filtered data based on company and date range
+df_filtered = df_filtered[
+    mask_posisi & mask_kbmi_type & mask_company_name & mask_year & mask_quarter
+]
