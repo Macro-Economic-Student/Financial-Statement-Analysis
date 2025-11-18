@@ -12,6 +12,8 @@ sys.path.append(str(Path(__file__).resolve().parents[2] / "data"))
 
 from import_data import import_rasio, import_fitur_rasio, import_dictionary_rasio
 
+st.set_page_config(layout="wide")
+
 st.markdown("# Raw Data Overtime Multiple Bank Persentase")
 
 with st.sidebar:
@@ -96,3 +98,20 @@ default_year = sorted_year
 default_quartile = sorted_quartile
 default_kbmi = sorted_kbmi
 
+index = 0
+
+st.markdown(f"#### 📊 Chart {index+1}: Raw Data for Comparing Companies on One Feature")
+
+col_key = f"feature_selector_{index}"
+company_key = f"company_selector_{index}"
+date_key = f"date_range_selector_{index}"
+date_form_key = f"date_form_{index}"
+year_key = f"year_selector_{index}"
+quartile_key = f"quartile_selector_{index}"
+kbmi_key = f"kbmi_selector_{index}"
+chart_key = f"plotly_chart_{index}"
+df_key = f"plotly_df_{index}"
+rule_form_key = f"rule_form_{index}"
+sign_selectbox_key = f"sign_selectbox_{index}"
+percent_number_input_key = f"percent_number_input_{index}"
+df_form_key = f"plotly_df_form_{index}"
