@@ -12,6 +12,9 @@ ovt_single_bank_check_percentage = st.Page(
 ovt_multiple_bank_check_percentage = st.Page(
     "pages/percentage/overtime_multiple_bank_check_page_percentage.py", title="Overtime Multiple Bank Persentase"
 )
+raw_data_overtime_multiple_bank_check_page_percentage = st.Page(
+    "pages/percentage/raw_data_overtime_multiple_bank_check_page_percentage.py", title="Raw Data Overtime Multiple Bank Persentase"
+)
 
 # Pages for number
 single_feat_check_number = st.Page(
@@ -27,7 +30,7 @@ ovt_single_bank_check_number = st.Page(
 pg = st.navigation(
     {
         "Persentase" :[single_feat_check_percentage, ovt_multiple_bank_check_percentage, ovt_single_bank_check_percentage],
-        "Angka" :[single_feat_check_number, ovt_multiple_bank_check_number, ovt_single_bank_check_number]
+        "Angka" :[single_feat_check_number, ovt_multiple_bank_check_number, ovt_single_bank_check_number, raw_data_overtime_multiple_bank_check_page_percentage]
     }
 )
 
