@@ -225,7 +225,7 @@ col_tuples = [(int(r['year']), r['quarter']) for _, r in unique_yq.iterrows()]
 # pivot (agg mean in case of multiple rows per company-quarter)
 pivot = df_filtered.pivot_table(index='company_name',
                            columns=['year', 'quarter'],
-                           values=selected_display,
+                           values=column_to_check,
                            aggfunc='mean')
 
 # Reindex columns to ensure sorted order and present all col_tuples
