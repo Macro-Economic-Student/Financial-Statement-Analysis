@@ -329,7 +329,7 @@ display_row_stats = row_stats_df.applymap(lambda x: fmt_value(x, percent_mode))
 st.markdown("### Raw table (rows = companies, columns = Year → Quarter)")
 
 # Use two-column layout: left wide for table, right narrow for row-summary
-left_col, right_col = st.columns([4, 1.2])
+left_col, right_col = st.columns([1, 1])
 
 with left_col:
     st.markdown("#### Table")
@@ -337,16 +337,16 @@ with left_col:
     # We'll display pivot with MultiIndex columns (string values). To show bottom summary, we can show bottom separately
     st.dataframe(display_pivot, use_container_width=True, key="raw_table_pivot")
 
-    st.markdown("#### Column-wise summary (bottom)")
-    # bottom_df has index stats x columns (multiindex). We want to present as table where columns = same as pivot
-    # transposed for readability
-    bottom_t = display_bottom.T
-    bottom_t.index = pd.MultiIndex.from_tuples(bottom_t.index)  # ensure MultiIndex names preserved
-    st.dataframe(bottom_t, use_container_width=True, key="raw_table_bottom")
-
 with right_col:
     st.markdown("#### Row summary (per company)")
     st.dataframe(display_row_stats, use_container_width=True, key="raw_table_row_summary")
+
+# ---------- Column-wise summary (bottom) shown full width with stats as rows ----------
+st.markdown("### Column-wise summary (statistics as rows, Year→Quarter as columns)")
+
+# display_bottom: this already has statistics as rows and MultiIndex columns (year, quarter)
+# so we show display_bottom (not transposed) so stats are rows, and columns are (year, quarter)
+st.dataframe(display_bottom, use_container_width=True, key="raw_table_column_summary_fullwidth")
 
 # ---------- Optional download buttons ----------
 @st.cache_data
