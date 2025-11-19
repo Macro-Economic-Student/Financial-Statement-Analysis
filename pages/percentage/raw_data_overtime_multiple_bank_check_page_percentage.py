@@ -356,34 +356,30 @@ def to_csv_bytes(df_obj):
 st.download_button("Download pivot CSV", data=to_csv_bytes(pivot), file_name=f"pivot_{selected_display}.csv", mime="text/csv")
 st.download_button("Download row-summary CSV", data=to_csv_bytes(row_stats_df), file_name=f"row_summary_{selected_display}.csv", mime="text/csv")
 
-
-
 def df_to_excel_bytes(df_dict: dict):
     """
     df_dict: {"sheet_name": dataframe}
     returns binary XLSX file in memory
+    Uses pandas.ExcelWriter (openpyxl engine) so MultiIndex is handled correctly.
     """
     output = BytesIO()
-    wb = Workbook()
-    wb.remove(wb.active)
-
-    for sheet_name, df in df_dict.items():
-        ws = wb.create_sheet(title=sheet_name[:31])  # Excel sheet name limit
-        # Write header
-        ws.append(["Index"] + list(df.columns))
-        # Write rows
-        for idx, row in df.iterrows():
-            ws.append([idx] + list(row.values))
-
-    wb.save(output)
+    # use pandas ExcelWriter which will properly write MultiIndex columns/index
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        for sheet_name, df in df_dict.items():
+            # sanitize sheet name length
+            safe_name = str(sheet_name)[:31]
+            # If df has MultiIndex columns or index, to_excel will write them correctly
+            # Write DataFrame 'df' to the sheet
+            df.to_excel(writer, sheet_name=safe_name, index=True)
+        writer.save()
     return output.getvalue()
 
 # Prepare full export
 excel_file = df_to_excel_bytes({
-    "Pivot Table": pivot,                   # numeric pivot
-    "Row Summary": row_stats_df,            # numeric summary
-    "Display Pivot": display_pivot,         # formatted pivot (strings)
-    "Display Row Summary": display_row_stats  # formatted summary
+    "Pivot Table": pivot,                    # numeric pivot (MultiIndex cols)
+    "Row Summary": row_stats_df,             # numeric summary per row
+    "Display Pivot": display_pivot,          # formatted strings (if you want a pretty sheet)
+    "Display Row Summary": display_row_stats # formatted strings
 })
 
 st.download_button(
