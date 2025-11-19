@@ -311,9 +311,10 @@ def fmt_value(x, percent_mode: bool):
         return str(x)
 
 # ---------- Formatting decision ----------
-percent_mode = needs_percent_format(pivot.stack(dropna=True) if not pivot.empty else pd.Series(dtype=float))
+# percent_mode = needs_percent_format(pivot.stack(dropna=True) if not pivot.empty else pd.Series(dtype=float))
 
 # Format pivot for display: create display strings but keep numeric copies for downloads if desired
+percent_mode = True  # force percent mode for this page
 display_pivot = pivot.copy().astype(float)
 display_pivot = display_pivot.applymap(lambda x: fmt_value(x, percent_mode))
 
