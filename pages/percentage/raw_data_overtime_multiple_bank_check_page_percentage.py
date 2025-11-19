@@ -355,6 +355,7 @@ def to_csv_bytes(df_obj):
 
 st.download_button("Download pivot CSV", data=to_csv_bytes(pivot), file_name=f"pivot_{selected_display}.csv", mime="text/csv")
 st.download_button("Download row-summary CSV", data=to_csv_bytes(row_stats_df), file_name=f"row_summary_{selected_display}.csv", mime="text/csv")
+st.download_button("Download column-summary CSV", data=to_csv_bytes(bottom_df), file_name=f"column_summary_{selected_display}.csv", mime="text/csv")
 
 def df_to_excel_bytes(df_dict: dict):
     """
@@ -376,10 +377,12 @@ def df_to_excel_bytes(df_dict: dict):
 
 # Prepare full export
 excel_file = df_to_excel_bytes({
-    "Pivot Table": pivot,                    # numeric pivot (MultiIndex cols)
-    "Row Summary": row_stats_df,             # numeric summary per row
-    "Display Pivot": display_pivot,          # formatted strings (if you want a pretty sheet)
-    "Display Row Summary": display_row_stats # formatted strings
+    "Pivot Table": pivot,                       # numeric pivot (MultiIndex cols)
+    "Row Summary": row_stats_df,                # numeric summary per row
+    "Column Summary": bottom_df,                # numeric summary per column
+    "Display Pivot": display_pivot,             # formatted strings (if you want a pretty sheet)
+    "Display Row Summary": display_row_stats,   # formatted strings
+    "Display Column Summary": display_bottom    # formatted strings
 })
 
 st.download_button(
