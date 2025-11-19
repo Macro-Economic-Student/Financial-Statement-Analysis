@@ -5,7 +5,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 import sys
 from pathlib import Path
-import operator
+# import operator
+from io import BytesIO
+from openpyxl import Workbook
 
 # add "../data" to sys.path
 sys.path.append(str(Path(__file__).resolve().parents[2] / "data"))
@@ -100,7 +102,7 @@ default_kbmi = sorted_kbmi
 
 index = 0
 
-st.markdown(f"#### 📊 Chart {index+1}: Raw Data for Comparing Companies on One Feature")
+st.markdown(f"#### 📊 Chart: Raw Data for Comparing Companies on One Feature")
 
 col_key = f"feature_selector_{index}"
 company_key = f"company_selector_{index}"
@@ -130,7 +132,7 @@ df_filtered = df.copy()
 
 with st.form(key=date_form_key):
     start_date, end_date = st.date_input(
-        f"Select date range for Chart {index+1}",
+        f"Select date range for Chart",
         value=(min_date, max_date),
         min_value=min_date,
         max_value=max_date,
@@ -142,7 +144,7 @@ with st.form(key=date_form_key):
 col1, col2 = st.columns(2)
 with col1 :
     selected_display = st.selectbox(
-        f"Select feature for Chart {index+1}",
+        f"Select feature for Chart",
         options=item_dict_list,
         index=item_dict_list.index(default_display),
         key=col_key
@@ -152,7 +154,7 @@ with col1 :
     
 with col2 :
     selected_kbmi = st.multiselect(
-        f"Select KBMI for Chart {index+1}",
+        f"Select KBMI for Chart",
         options=sorted_kbmi,
         default=default_kbmi,
         key=kbmi_key
@@ -168,7 +170,7 @@ else:
     valid_companies = sorted(df["company_name"].dropna().unique().tolist())
 
 selected_companies = st.multiselect(
-    f"Select companies for Chart {index+1}",
+    f"Select companies for Chart",
     options=valid_companies,
     default=valid_companies,
     key=company_key
@@ -189,14 +191,14 @@ col3, col4 = st.columns(2)
 
 with col3 :
     selected_year = st.multiselect(
-        f"Select year for Chart {index+1}",
+        f"Select year for Chart",
         options=valid_years,
         default=valid_years,
         key=year_key
     )
 with col4 :
     selected_quartile = st.multiselect(
-        f"Select quartile for Chart {index+1}",
+        f"Select quartile for Chart",
         options=sorted_quartile,
         default=default_quartile,
         key=quartile_key
@@ -209,3 +211,183 @@ mask_quarter = df_filtered["quarter"].isin(selected_quartile) if selected_quarti
 df_filtered = df_filtered[
     mask_posisi & mask_kbmi_type & mask_company_name & mask_year & mask_quarter
 ]
+
+
+# Create column order (sorted by year ascending, quarter order Q1..Q4)
+quarter_order = ['q1', 'q2', 'q3', 'q4']
+
+# build a sorted list of (year, quarter) present
+unique_yq = df_filtered[['year', 'quarter']].drop_duplicates()
+unique_yq['q_order'] = unique_yq['quarter'].apply(lambda q: quarter_order.index(q) if q in quarter_order else 99)
+unique_yq = unique_yq.sort_values(['year', 'q_order'])
+col_tuples = [(int(r['year']), r['quarter']) for _, r in unique_yq.iterrows()]
+
+# pivot (agg mean in case of multiple rows per company-quarter)
+pivot = df_filtered.pivot_table(index='company_name',
+                           columns=['year', 'quarter'],
+                           values=selected_display,
+                           aggfunc='mean')
+
+# Reindex columns to ensure sorted order and present all col_tuples
+# Build MultiIndex in desired order
+ordered_cols = pd.MultiIndex.from_tuples(col_tuples, names=['year', 'quarter'])
+# Reindex to include missing columns as NaN if needed
+pivot = pivot.reindex(columns=ordered_cols, fill_value=np.nan)
+
+# ---------- Column-wise summary (bottom row) ----------
+col_stats = {}
+series_all = pivot  # DataFrame: rows companies, cols multiindex
+for col in pivot.columns:
+    s = pivot[col].dropna()
+    if s.empty:
+        col_stats[col] = {k: np.nan for k in ["Min","P5","P15","Q1","Mean","Median","Q3","P85","P95","Max","Std"]}
+        continue
+    arr = s.values
+    col_stats[col] = {
+        "Min": np.nanmin(arr),
+        "P5": np.nanpercentile(arr, 5),
+        "P15": np.nanpercentile(arr, 15),
+        "Q1": np.nanpercentile(arr, 25),
+        "Mean": np.nanmean(arr),
+        "Median": np.nanmedian(arr),
+        "Q3": np.nanpercentile(arr, 75),
+        "P85": np.nanpercentile(arr, 85),
+        "P95": np.nanpercentile(arr, 95),
+        "Max": np.nanmax(arr),
+        "Std": np.nanstd(arr, ddof=0)
+    }
+
+# Build bottom summary DataFrame with same MultiIndex columns
+bottom_df = pd.DataFrame({col: pd.Series(col_stats[col]) for col in pivot.columns})
+# bottom_df index = statistic keys; columns = MultiIndex
+# We'll transpose later for display if needed.
+
+# ---------- Row-wise summary (right side) ----------
+row_stats = []
+for idx, row in pivot.iterrows():
+    vals = row.dropna().values
+    if vals.size == 0:
+        stats_row = {k: np.nan for k in ["Min","P5","P15","Q1","Mean","Median","Q3","P85","P95","Max","Std"]}
+    else:
+        stats_row = {
+            "Min": np.nanmin(vals),
+            "P5": np.nanpercentile(vals, 5),
+            "P15": np.nanpercentile(vals, 15),
+            "Q1": np.nanpercentile(vals, 25),
+            "Mean": np.nanmean(vals),
+            "Median": np.nanmedian(vals),
+            "Q3": np.nanpercentile(vals, 75),
+            "P85": np.nanpercentile(vals, 85),
+            "P95": np.nanpercentile(vals, 95),
+            "Max": np.nanmax(vals),
+            "Std": np.nanstd(vals, ddof=0)
+        }
+    row_stats.append((idx, stats_row))
+
+row_stats_df = pd.DataFrame([s for _, s in row_stats], index=[r for r, _ in row_stats])
+# reorder columns
+row_stats_df = row_stats_df[["Min","P5","P15","Q1","Mean","Median","Q3","P85","P95","Max","Std"]]
+
+# ---------- Formatting functions ----------
+def needs_percent_format(series: pd.Series) -> bool:
+    """Heuristic: return True if values look like proportions (-1..1)"""
+    if series.dropna().empty:
+        return False
+    smin = series.min()
+    smax = series.max()
+    return (smin >= -1.0 and smax <= 1.0)
+
+def fmt_value(x, percent_mode: bool):
+    if pd.isna(x):
+        return ""
+    try:
+        if percent_mode:
+            return f"{x:.2%}"
+        # else numeric with thousands separators (or float 4 decimals)
+        if float(x).is_integer():
+            return f"{int(x):,}"
+        return f"{x:,.4f}"
+    except Exception:
+        return str(x)
+
+# ---------- Formatting decision ----------
+percent_mode = needs_percent_format(pivot.stack(dropna=True) if not pivot.empty else pd.Series(dtype=float))
+
+# Format pivot for display: create display strings but keep numeric copies for downloads if desired
+display_pivot = pivot.copy().astype(float)
+display_pivot = display_pivot.applymap(lambda x: fmt_value(x, percent_mode))
+
+# Create bottom summary display (as a single-row DataFrame matching pivot columns)
+display_bottom = bottom_df.applymap(lambda x: fmt_value(x, percent_mode))
+
+# Create row summary display
+display_row_stats = row_stats_df.applymap(lambda x: fmt_value(x, percent_mode))
+
+# ---------- Combine table for visual output ----------
+# Streamlit can render MultiIndex columns; we'll show pivot (companies x year/quarter) with bottom row visually
+st.markdown("### Raw table (rows = companies, columns = Year → Quarter)")
+
+# Use two-column layout: left wide for table, right narrow for row-summary
+left_col, right_col = st.columns([4, 1.2])
+
+with left_col:
+    st.markdown("#### Table")
+    # Show table
+    # We'll display pivot with MultiIndex columns (string values). To show bottom summary, we can show bottom separately
+    st.dataframe(display_pivot, use_container_width=True, key="raw_table_pivot")
+
+    st.markdown("#### Column-wise summary (bottom)")
+    # bottom_df has index stats x columns (multiindex). We want to present as table where columns = same as pivot
+    # transposed for readability
+    bottom_t = display_bottom.T
+    bottom_t.index = pd.MultiIndex.from_tuples(bottom_t.index)  # ensure MultiIndex names preserved
+    st.dataframe(bottom_t, use_container_width=True, key="raw_table_bottom")
+
+with right_col:
+    st.markdown("#### Row summary (per company)")
+    st.dataframe(display_row_stats, use_container_width=True, key="raw_table_row_summary")
+
+# ---------- Optional download buttons ----------
+@st.cache_data
+def to_csv_bytes(df_obj):
+    return df_obj.to_csv(index=True).encode('utf-8')
+
+st.download_button("Download pivot CSV", data=to_csv_bytes(pivot), file_name=f"pivot_{selected_display}.csv", mime="text/csv")
+st.download_button("Download row-summary CSV", data=to_csv_bytes(row_stats_df), file_name=f"row_summary_{selected_display}.csv", mime="text/csv")
+
+
+
+def df_to_excel_bytes(df_dict: dict):
+    """
+    df_dict: {"sheet_name": dataframe}
+    returns binary XLSX file in memory
+    """
+    output = BytesIO()
+    wb = Workbook()
+    wb.remove(wb.active)
+
+    for sheet_name, df in df_dict.items():
+        ws = wb.create_sheet(title=sheet_name[:31])  # Excel sheet name limit
+        # Write header
+        ws.append(["Index"] + list(df.columns))
+        # Write rows
+        for idx, row in df.iterrows():
+            ws.append([idx] + list(row.values))
+
+    wb.save(output)
+    return output.getvalue()
+
+# Prepare full export
+excel_file = df_to_excel_bytes({
+    "Pivot Table": pivot,                   # numeric pivot
+    "Row Summary": row_stats_df,            # numeric summary
+    "Display Pivot": display_pivot,         # formatted pivot (strings)
+    "Display Row Summary": display_row_stats  # formatted summary
+})
+
+st.download_button(
+    "📥 Download as Excel (.xlsx)",
+    data=excel_file,
+    file_name=f"raw_data_{selected_display}.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
