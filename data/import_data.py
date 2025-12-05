@@ -83,7 +83,7 @@ def import_rasio() -> pd.DataFrame:
     df_kpmm_2 = pd.read_excel(file_kpmm_2)
     df_kualitas_2 = pd.read_excel(file_kualitas_2)
     df_laba_rugi_2 = pd.read_excel(file_laba_rugi_2)
-    df_lcr_nsfr_2 = pd.read_excel(file_lcr_nsfr_2)
+    # df_lcr_nsfr_2 = pd.read_excel(file_lcr_nsfr_2)
 
      # Read KBMI 3 files
     df_kbmi_3 = pd.read_excel(file3)
@@ -92,7 +92,7 @@ def import_rasio() -> pd.DataFrame:
     df_kpmm_3 = pd.read_excel(file_kpmm_3)
     df_kualitas_3 = pd.read_excel(file_kualitas_3)
     df_laba_rugi_3 = pd.read_excel(file_laba_rugi_3)
-    df_lcr_nsfr_3 = pd.read_excel(file_lcr_nsfr_3)
+    # df_lcr_nsfr_3 = pd.read_excel(file_lcr_nsfr_3)
 
     # Combining df rasio KBMI 1 and KBMI 4
     df = pd.concat([df_kbmi_1, df_kbmi_4], axis=0, join="outer", ignore_index=True)
@@ -116,39 +116,42 @@ def import_rasio() -> pd.DataFrame:
     df = merge_two_df(df, df_lcr_nsfr_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining with KBMI 2 data
+    df_all_2 = df_kbmi_2.copy()
     # Combining df with df_aset_2
-    df = merge_two_df(df, df_aset_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    df_all_2 = merge_two_df(df_all_2, df_aset_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_liabilitas_2
-    df = merge_two_df(df, df_liabilitas_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    df_all_2 = merge_two_df(df_all_2, df_liabilitas_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_kpmm_2
-    df = merge_two_df(df, df_kpmm_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    df_all_2 = merge_two_df(df_all_2, df_kpmm_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_kualitas_2
-    df = merge_two_df(df, df_kualitas_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    df_all_2 = merge_two_df(df_all_2, df_kualitas_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_laba_rugi_2
-    df = merge_two_df(df, df_laba_rugi_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    df_all_2 = merge_two_df(df_all_2, df_laba_rugi_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining with KBMI 3 data
+    df_all_3 = df_kbmi_3.copy()
     # Combining df with df_aset_3
-    df = merge_two_df(df, df_aset_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    df_all_3 = merge_two_df(df_all_3, df_aset_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_liabilitas_3
-    df = merge_two_df(df, df_liabilitas_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    df_all_3 = merge_two_df(df_all_3, df_liabilitas_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_kpmm_3
-    df = merge_two_df(df, df_kpmm_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    dfdf_all_3 = merge_two_df(df_all_3, df_kpmm_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_kualitas_3
-    df = merge_two_df(df, df_kualitas_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    df_all_3 = merge_two_df(df_all_3, df_kualitas_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_laba_rugi_3
-    df = merge_two_df(df, df_laba_rugi_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    df_all_3 = merge_two_df(df_all_3, df_laba_rugi_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
 
-    return df
+    df_combined_kbmi_2_3_4 = pd.concat([df, df_all_2, df_all_3], axis=0, join="outer", ignore_index=True)
+    return df_combined_kbmi_2_3_4
 
 def import_fitur_rasio() -> list :
     fitur_rasio = [
@@ -291,12 +294,12 @@ def import_numerik() -> pd.DataFrame:
     # df_aset_4 = pd.read_excel(file_aset_4)
 
     # Combining df rasio KBMI 1 and KBMI 4
-    df = df_kbmi_4.copy()
+    df_combined_kbmi_2_3_4 = pd.concat([df_kbmi_4, df_kbmi_2, df_kbmi_3], axis=0, join="outer", ignore_index=True)
 
     # # Combining df with df_aset_4
     # df = merge_two_df(df, df_aset_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
-    return df
+    return df_combined_kbmi_2_3_4
 
 def import_fitur_numerik() -> list :
     fitur_numerik = [
