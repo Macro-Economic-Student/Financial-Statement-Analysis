@@ -35,7 +35,7 @@ def import_rasio() -> pd.DataFrame:
     # Path to this file's folder ("data")
     base_path = Path(__file__).parent
 
-    # Build absolute paths to the Excel files
+    # Build absolute paths to the Excel files (KBMI 4)
     file1 = base_path / "summarized rasio - KBMI 1.xlsx"
     file4 = base_path / "summarized rasio - KBMI 4.xlsx"
     file_aset_4 = base_path / "summarized fitur aset - KBMI 4.xlsx"
@@ -45,23 +45,54 @@ def import_rasio() -> pd.DataFrame:
     file_laba_rugi_4 = base_path / "summarized fitur Laba Rugi - KBMI 4.xlsx"
     file_lcr_nsfr_4 = base_path / "summarized fitur lcr nsfr - KBMI 4.xlsx"
 
+    # Build absolute paths to the Excel files (KBMI 2)
+    file2 = base_path / "summarized rasio - KBMI 2.xlsx"
+    file_aset_2 = base_path / "summarized fitur aset - KBMI 2.xlsx"
+    file_liabilitas_2 = base_path / "summarized fitur liabilitas - KBMI 2.xlsx"
+    file_kpmm_2 = base_path / "summarized fitur kpmm - KBMI 2.xlsx"
+    file_kualitas_2 = base_path / "summarized fitur Kualitas Aset - KBMI 2.xlsx"
+    file_laba_rugi_2 = base_path / "summarized fitur Laba Rugi - KBMI 2.xlsx"
+    file_lcr_nsfr_2 = base_path / "summarized fitur lcr nsfr - KBMI 2.xlsx"
+
+    # Build absolute paths to the Excel files (KBMI 3)
+    file3 = base_path / "summarized rasio - KBMI 3.xlsx"
+    file_aset_3 = base_path / "summarized fitur aset - KBMI 3.xlsx"
+    file_liabilitas_3 = base_path / "summarized fitur liabilitas - KBMI 3.xlsx"
+    file_kpmm_3 = base_path / "summarized fitur kpmm - KBMI 3.xlsx"
+    file_kualitas_3 = base_path / "summarized fitur Kualitas Aset - KBMI 3.xlsx"
+    file_laba_rugi_3 = base_path / "summarized fitur Laba Rugi - KBMI 3.xlsx"
+    file_lcr_nsfr_3 = base_path / "summarized fitur lcr nsfr - KBMI 3.xlsx"
+
     # Read all data files
     df_kbmi_1 = pd.read_excel(file1)
     df_kbmi_1 = df_kbmi_1.drop(columns=["sort_key"], errors="ignore")
 
+    # Read KBMI 4 files
     df_kbmi_4 = pd.read_excel(file4)
-
     df_aset_4 = pd.read_excel(file_aset_4)
-
     df_liabilitas_4 = pd.read_excel(file_liabilitas_4)
-
     df_kpmm_4 = pd.read_excel(file_kpmm_4)
-
     df_kualitas_4 = pd.read_excel(file_kualitas_4)
-
     df_laba_rugi_4 = pd.read_excel(file_laba_rugi_4)
-
     df_lcr_nsfr_4 = pd.read_excel(file_lcr_nsfr_4)
+
+     # Read KBMI 2 files
+    df_kbmi_2 = pd.read_excel(file2)
+    df_aset_2 = pd.read_excel(file_aset_2)
+    df_liabilitas_2 = pd.read_excel(file_liabilitas_2)
+    df_kpmm_2 = pd.read_excel(file_kpmm_2)
+    df_kualitas_2 = pd.read_excel(file_kualitas_2)
+    df_laba_rugi_2 = pd.read_excel(file_laba_rugi_2)
+    df_lcr_nsfr_2 = pd.read_excel(file_lcr_nsfr_2)
+
+     # Read KBMI 3 files
+    df_kbmi_3 = pd.read_excel(file3)
+    df_aset_3 = pd.read_excel(file_aset_3)
+    df_liabilitas_3 = pd.read_excel(file_liabilitas_3)
+    df_kpmm_3 = pd.read_excel(file_kpmm_3)
+    df_kualitas_3 = pd.read_excel(file_kualitas_3)
+    df_laba_rugi_3 = pd.read_excel(file_laba_rugi_3)
+    df_lcr_nsfr_3 = pd.read_excel(file_lcr_nsfr_3)
 
     # Combining df rasio KBMI 1 and KBMI 4
     df = pd.concat([df_kbmi_1, df_kbmi_4], axis=0, join="outer", ignore_index=True)
@@ -83,6 +114,39 @@ def import_rasio() -> pd.DataFrame:
 
     # Combining df with df_laba_rugi_4
     df = merge_two_df(df, df_lcr_nsfr_4, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining with KBMI 2 data
+    # Combining df with df_aset_2
+    df = merge_two_df(df, df_aset_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining df with df_liabilitas_2
+    df = merge_two_df(df, df_liabilitas_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining df with df_kpmm_2
+    df = merge_two_df(df, df_kpmm_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining df with df_kualitas_2
+    df = merge_two_df(df, df_kualitas_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining df with df_laba_rugi_2
+    df = merge_two_df(df, df_laba_rugi_2, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining with KBMI 3 data
+    # Combining df with df_aset_3
+    df = merge_two_df(df, df_aset_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining df with df_liabilitas_3
+    df = merge_two_df(df, df_liabilitas_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining df with df_kpmm_3
+    df = merge_two_df(df, df_kpmm_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining df with df_kualitas_3
+    df = merge_two_df(df, df_kualitas_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
+    # Combining df with df_laba_rugi_3
+    df = merge_two_df(df, df_laba_rugi_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+
 
     return df
 
@@ -216,10 +280,13 @@ def import_numerik() -> pd.DataFrame:
 
     # Build absolute paths to the Excel files
     file4 = base_path / "summarized fitur Numeric - KBMI 4.xlsx"
-    # file_aset_4 = base_path / "summarized fitur aset - KBMI 4.xlsx"
+    file2 = base_path / "summarized fitur Numeric - KBMI 2.xlsx"
+    file3 = base_path / "summarized fitur Numeric - KBMI 3.xlsx"
 
     # Read all data files
     df_kbmi_4 = pd.read_excel(file4)
+    df_kbmi_2 = pd.read_excel(file2)
+    df_kbmi_3 = pd.read_excel(file3)
 
     # df_aset_4 = pd.read_excel(file_aset_4)
 
