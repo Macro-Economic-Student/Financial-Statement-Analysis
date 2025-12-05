@@ -34,14 +34,28 @@ Link for Streamlit Dashboard :
 │   ├── cleaned_pivot_all_data.xlsx
 │   ├── combine_data.ipynb
 │   ├── import_data.py
+│   ├── summarized fitur Kualitas Aset - KBMI 2.xlsx
+│   ├── summarized fitur Kualitas Aset - KBMI 3.xlsx
 │   ├── summarized fitur Kualitas Aset - KBMI 4.xlsx
+│   ├── summarized fitur Laba Rugi - KBMI 2.xlsx
+│   ├── summarized fitur Laba Rugi - KBMI 3.xlsx
 │   ├── summarized fitur Laba Rugi - KBMI 4.xlsx
+│   ├── summarized fitur Numeric - KBMI 2.xlsx
+│   ├── summarized fitur Numeric - KBMI 3.xlsx
 │   ├── summarized fitur Numeric - KBMI 4.xlsx
+│   ├── summarized fitur aset - KBMI 2.xlsx
+│   ├── summarized fitur aset - KBMI 3.xlsx
 │   ├── summarized fitur aset - KBMI 4.xlsx
+│   ├── summarized fitur kpmm - KBMI 2.xlsx
+│   ├── summarized fitur kpmm - KBMI 3.xlsx
 │   ├── summarized fitur kpmm - KBMI 4.xlsx
 │   ├── summarized fitur lcr nsfr - KBMI 4.xlsx
+│   ├── summarized fitur liabilitas - KBMI 2.xlsx
+│   ├── summarized fitur liabilitas - KBMI 3.xlsx
 │   ├── summarized fitur liabilitas - KBMI 4.xlsx
 │   ├── summarized rasio - KBMI 1.xlsx
+│   ├── summarized rasio - KBMI 2.xlsx
+│   ├── summarized rasio - KBMI 3.xlsx
 │   ├── summarized rasio - KBMI 4.xlsx
 │   ├── summarized_aset.xlsx
 │   └── summarized_rasio.xlsx
@@ -63,7 +77,7 @@ Link for Streamlit Dashboard :
 │   └── percentage
 └── requirements.txt
 
-10 directories, 30 files
+10 directories, 44 files
 ```
 <!-- END STRUCTURE -->
 
