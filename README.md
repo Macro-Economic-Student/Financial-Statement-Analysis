@@ -32,6 +32,7 @@ Link for Streamlit Dashboard :
 │   ├── Rasio.xlsx
 │   ├── cleaned_all_data.xlsx
 │   ├── cleaned_pivot_all_data.xlsx
+│   ├── cleaned_pivot_all_data_kbmi_2.xlsx
 │   ├── combine_data.ipynb
 │   ├── import_data.py
 │   ├── summarized fitur Kualitas Aset - KBMI 2.xlsx
@@ -77,7 +78,7 @@ Link for Streamlit Dashboard :
 │   └── percentage
 └── requirements.txt
 
-10 directories, 44 files
+10 directories, 45 files
 ```
 <!-- END STRUCTURE -->
 
