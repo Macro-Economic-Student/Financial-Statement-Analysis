@@ -76,7 +76,7 @@ def import_rasio() -> pd.DataFrame:
     df_laba_rugi_4 = pd.read_excel(file_laba_rugi_4)
     df_lcr_nsfr_4 = pd.read_excel(file_lcr_nsfr_4)
 
-     # Read KBMI 2 files
+    # Read KBMI 2 files
     df_kbmi_2 = pd.read_excel(file2)
     df_aset_2 = pd.read_excel(file_aset_2)
     df_liabilitas_2 = pd.read_excel(file_liabilitas_2)
@@ -85,7 +85,7 @@ def import_rasio() -> pd.DataFrame:
     df_laba_rugi_2 = pd.read_excel(file_laba_rugi_2)
     # df_lcr_nsfr_2 = pd.read_excel(file_lcr_nsfr_2)
 
-     # Read KBMI 3 files
+    # Read KBMI 3 files
     df_kbmi_3 = pd.read_excel(file3)
     df_aset_3 = pd.read_excel(file_aset_3)
     df_liabilitas_3 = pd.read_excel(file_liabilitas_3)
