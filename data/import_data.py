@@ -141,7 +141,7 @@ def import_rasio() -> pd.DataFrame:
     df_all_3 = merge_two_df(df_all_3, df_liabilitas_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_kpmm_3
-    dfdf_all_3 = merge_two_df(df_all_3, df_kpmm_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
+    df_all_3 = merge_two_df(df_all_3, df_kpmm_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
 
     # Combining df with df_kualitas_3
     df_all_3 = merge_two_df(df_all_3, df_kualitas_3, on=['posisi', 'company_name'], exclude_cols=exclude_cols)
